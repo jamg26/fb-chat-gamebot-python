@@ -65,8 +65,6 @@ class FacebookBot(Client):
 
         if self.bot == 1:
             if thread_type == self.thread_type:
-                self.markAsDelivered(thread_id, message_object.uid)
-                self.markAsRead(thread_id)
                 command = message_object.text.lower()
                 if author_id != self.uid:
                     # provide random quotes
@@ -317,4 +315,5 @@ class FacebookBot(Client):
                     self.markAsRead(thread_id)
 
 
-FacebookBot("jammmg26", "jamuel26").listen()
+client = FacebookBot("jammmg26", "jamuel26")
+client.listen()
