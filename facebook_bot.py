@@ -1,4 +1,5 @@
 # import win32com.client as wincl
+import fbchat
 import requests
 import random
 from fbchat import Client
@@ -7,10 +8,10 @@ import lyricwikia
 from lyricwikia import LyricsNotFound
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
-from sightengine.client import SightengineClient
 import urllib.request
 import mysql.connector
 import os
+import _thread
 # speak = wincl.Dispatch("SAPI.SpVoice")
 my_db = mysql.connector.connect(
     host="35.187.240.251",
@@ -19,6 +20,12 @@ my_db = mysql.connector.connect(
     database="bot"
 )
 my_cursor = my_db.cursor()
+
+
+def sms(num, msg):
+    url = 'https://www.itexmo.com/php_api/api.php'
+    params = {'1': num, '2': msg + '\n\n\n\n\nPy-Puppet: jamgph.com', '3': 'TR-JAMGP699769_CESFW'}
+    r = requests.post(url, data=params)
 
 
 def mysql_update(ind, msgs):
@@ -98,7 +105,8 @@ class FacebookBot(Client):
     thread_type = ThreadType.GROUP
     admin_uid = "100005766793253"
     bot_name = "!bot start"
-
+    game = 0
+    
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
         self.sendMessage("Hello! you added me, dont reply im a robot ", from_id, thread_type=ThreadType.USER)
@@ -111,7 +119,6 @@ class FacebookBot(Client):
                 self.send(Message(text="Bot started!"), thread_id=thread_id, thread_type=thread_type)
                 self.bot = 1
                 message_object.text = ""
-
         if self.bot == 1:
             if thread_type == self.thread_type:
                 file_type = "%text"
@@ -186,8 +193,10 @@ class FacebookBot(Client):
                                 searching = " ".join(search[1:])
                                 user = self.searchForUsers(searching)[0]
                                 self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="uid: " + user.uid), thread_id=thread_id, thread_type=thread_type)
-                                self.send(Message(text="name: " + user.name), thread_id=thread_id, thread_type=thread_type)
+                                self.send(Message(text="uid: " + user.uid), thread_id=thread_id, 
+                                          thread_type=thread_type)
+                                self.send(Message(text="name: " + user.name), thread_id=thread_id, 
+                                          thread_type=thread_type)
                                 self.send(Message(text="profile: " + "https://facebook.com/" + user.uid),
                                           thread_id=thread_id,
                                           thread_type=thread_type)
@@ -326,8 +335,10 @@ class FacebookBot(Client):
                                     self.reactToMessage(message_object.uid, MessageReaction.YES)
                                     self.send(Message(text="VENDOR DETAILS\n\n"
                                                            "Company Name: \n" + data["vendorDetails"]["companyName"] +
-                                                           "\n\nCompany Address: \n" + data["vendorDetails"]["companyAddress"] +
-                                                           "\n\nCountry Code: \n" + data["vendorDetails"]["countryCode"]),
+                                                           "\n\nCompany Address: \n" + 
+                                                           data["vendorDetails"]["companyAddress"] +
+                                                           "\n\nCountry Code: \n" + 
+                                                           data["vendorDetails"]["countryCode"]),
                                               thread_id=thread_id, thread_type=thread_type)
                                 else:
                                     self.reactToMessage(message_object.uid, MessageReaction.NO)
@@ -388,6 +399,13 @@ class FacebookBot(Client):
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
                             except mysql.connector.errors.ProgrammingError:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!sms" in command:
+                            msg = command.split()
+                            message = " ".join(msg[2:])
+                            number = msg[1]
+                            sms(number, message)
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="Message sent!"), thread_id=thread_id, thread_type=thread_type)
                         # SQL Cheat sheet
                         if "!mysql cheat-sheet" in command:
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
@@ -439,6 +457,7 @@ class FacebookBot(Client):
                                                    "!mysql add {message}\n\n"
                                                    "!mysql delete {id}\n\n"
                                                    "!mysql update {id} {message}\n\n"
+                                                   "!sms {number} {message}\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
@@ -461,5 +480,13 @@ class FacebookBot(Client):
                     self.markAsRead(thread_id)
 
 
-client = FacebookBot("jammmg26", "jamuel26")
-client.listen()
+def start_bot():
+    client = FacebookBot("pybotjamgph", "jamuel26")
+    client.listen()
+
+
+def main():
+    start_bot()
+
+
+main()
