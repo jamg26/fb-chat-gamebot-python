@@ -9,7 +9,47 @@ from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
 from sightengine.client import SightengineClient
 import urllib.request
+import mysql.connector
+import os
 # speak = wincl.Dispatch("SAPI.SpVoice")
+my_db = mysql.connector.connect(
+    host="35.187.240.251",
+    user="jamg",
+    passwd="jamuel26",
+    database="bot"
+)
+my_cursor = my_db.cursor()
+
+
+def mysql_update(ind, msgs):
+    sql = "UPDATE crud SET message = '" + msgs + "' WHERE ID=" + ind
+    my_cursor.execute(sql)
+    my_db.commit()
+
+
+def mysql_delete(ind):
+    if ind == "all":
+        sql = "DELETE FROM crud WHERE id != 0"
+        my_cursor.execute(sql)
+        my_db.commit()
+    else:
+        sql = "DELETE FROM crud WHERE id = " + ind
+        my_cursor.execute(sql)
+        my_db.commit()
+
+
+def mysql_add(message):
+    sql = "INSERT INTO crud (message) VALUES (%s)"
+    val = (message,)
+    my_cursor.execute(sql, val)
+    my_db.commit()
+
+
+def mysql_get():
+    my_cursor.execute("SELECT * FROM crud ORDER BY ID ASC")
+    my_result = my_cursor.fetchall()
+    res = "\n".join(map(str, my_result[0:]))
+    return res
 
 
 def mac_address(mac):
@@ -243,15 +283,18 @@ class FacebookBot(Client):
                                 self.send(Message(text="Bot paused!"), thread_id=thread_id, thread_type=thread_type)
                                 self.bot = 0
                             else:
-                                self.send(Message(text="di po ikaw boss ko"), thread_id=thread_id, thread_type=thread_type)
+                                self.send(Message(text="di po ikaw boss ko"), thread_id=thread_id,
+                                          thread_type=thread_type)
                         # speak bot
                         if "!speak" in command:
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
                             data = message_object.text.split()
                             voice = " ".join(data[1:])
                             tts = gTTS(text=voice, lang='en')
-                            tts.save("audio/" + thread_id + ".mp3")
-                            self.sendLocalFiles("audio/" + thread_id + ".mp3", voice, thread_id, thread_type)
+                            path = "audio/" + voice + ".mp3"
+                            tts.save(path)
+                            self.sendLocalFiles(path, "", thread_id, thread_type)
+                            os.remove(path)
                         # find network
                         if "!network" in command:
                             com = command.split()
@@ -298,12 +341,55 @@ class FacebookBot(Client):
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
                             self.sendLocalImage(path, message=Message(text=''), thread_id=thread_id,
                                                 thread_type=thread_type)
-                        if "!check-look-alike" in command:
-                            cli = SightengineClient('1212850761', '6xLpVnkzjfMfjgRn4RWQ')
-                            output = cli.check('celebrities').set_file('image/' + thread_id + '_temp.jpg')
-                            print(output)
+                        if "!forward" in command:
+                            split = command.split()
+                            url = "".join(split[1:])
+                            try:
+                                self.sendRemoteFiles(url, message=None, thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except FBchatFacebookError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!mysql show" in command:
+                            tip = "Executing\nSELECT * from table_name;"
+                            self.send(Message(text=tip), thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text="ID, MESSAGE"), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.send(Message(text=mysql_get()), thread_id=thread_id, thread_type=thread_type)
+                        if "!mysql add" in command:
+                            message = command.split()
+                            msg = " ".join(message[2:])
+                            tip = "Executing\nINSERT INTO table_name (column1)\nVALUES('" + msg + "');"
+                            self.send(Message(text=tip), thread_id=thread_id, thread_type=thread_type)
+                            mysql_add(msg)
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="'" + msg + "' added"), thread_id=thread_id, thread_type=thread_type)
+                        if "!mysql delete" in command:
+                            message = command.split()
+                            self.send(Message(text="Executing\nDELETE FROM table_name WHERE ID = " + message[2]),
+                                      thread_id=thread_id, thread_type=thread_type)
+                            try:
+                                mysql_delete(message[2])
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                self.send(Message(text="deleted"), thread_id=thread_id, thread_type=thread_type)
+                            except IndexError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except mysql.connector.errors.ProgrammingError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!mysql update" in command:
+                            message = command.split()
+                            msg = " ".join(message[3:])
+                            self.send(Message(text="Executing\nUPDATE table_name SET message = '" + msg +
+                                                   "' WHERE ID=" + message[2]), thread_id=thread_id, thread_type=thread_type)
+                            try:
+                                mysql_update(message[2], msg)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                self.send(Message(text="updated"), thread_id=thread_id, thread_type=thread_type)
+                            except IndexError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except mysql.connector.errors.ProgrammingError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
                         # SQL Cheat sheet
-                        if "!sql cheat-sheet" in command:
+                        if "!mysql cheat-sheet" in command:
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
                             self.send(Message(text="SELECT * FROM table_name;"), thread_id=thread_id,
                                       thread_type=thread_type)
@@ -341,13 +427,18 @@ class FacebookBot(Client):
                                                    "!div n1 n2 - dividing numbers\n\n"
                                                    "!mod n1 n2 - modulus division\n\n"
                                                    "!speak {words} - speak bot\n\n"
-                                                   "!sql cheat-sheet\n\n"
                                                    "!pause - pause bot\n\n"
                                                    "!start - start bot\n\n"
                                                    "!network 0930 - show network\n\n"
                                                    "!text-to-image\n\n"
                                                    "!mac {mac:address}\n\n"
                                                    "!qr {link}\n\n"
+                                                   "!forward {file link}\n\n"
+                                                   "!mysql cheat-sheet\n\n"
+                                                   "!mysql show - show datas\n\n"
+                                                   "!mysql add {message}\n\n"
+                                                   "!mysql delete {id}\n\n"
+                                                   "!mysql update {id} {message}\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
