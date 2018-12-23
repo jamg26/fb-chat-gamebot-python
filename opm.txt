@@ -1,0 +1,552 @@
+1,hawak kamay,yeng constantino
+2,hari ng sablay,sugarfree
+3,buloy,parokya ni edgar
+4,miles away,slapshock
+5,noypi,bamboo
+6,ligaya,eraserheads
+7,director's cut,kamikazee
+8,the day you said goodnight,hale
+9,kisapmata,rivermaya
+10,ikaw lamang,silent sanctuary
+11,magbalik,callalily
+12,tuliro,spongecola
+13,di na mababawi,spongecola
+14,lando,gloc9
+15,order taker,parokya ni edgar
+16,ulan,cueshe
+17,blue sky,hale
+18,hallelujah,bamboo
+19,tsinelas,kamikazee
+20,jeepney love story,yeng constantino
+21,pare ko,eraserheads
+22,guitara,parokya ni edgar
+23,lando,gloc9
+24,alak pa,greyhoundz
+25,estella,silent sanctuary
+26,halik ni hudas,wolfgang
+27,walang yamang mas hihigit sa'yo,cueshe
+28,maghihintay sayo,jhake vargas
+30,my love is here,eric santos
+31,simpleng tao,gloc9
+32,alapaap,eraserheads
+33,bring me down,rivermaya
+34,till my heartache ends,ella mae saison
+35,poorman's grave,eraserheads
+36,sana,parokya ni edgar
+37,peksman,siakol
+38,iingatan ka,karol banawa
+39,pasulyap sulyap,tootsie guevarra
+40,wag na wag mong sasabihin,kitchie nadal
+41,mr.cupido,jolina magdangal
+42,nandito ako,ogie alcasid
+43,bakit ngayon,ogie alcasid
+44,love moves,nina
+45,pangako,regine velasquez
+46,tl ako sayo,jolina magdangal
+47,baliw na puso,rosell nava
+48,pagdating ng panahon,aiza seguerra
+49,maging sino ka man,sharon cuneta
+50,di na ako aasa pa,introvoys
+51,remember me,renz verano
+52,bituing walang ningning,faith cuneta
+53,isang lahi,regine velasquez
+54,my love is here,eric santos
+55,kahit isang saglit,martin nievera
+56,muli,rodel naval
+57,lumayo ka mang sa akin,rodel naval
+58,we belong,toni gonzaga
+59,up side down,6 cyclemind
+60,saan ka man naroroon,zsa zsa padilla
+61,ewan ko,soap dish
+62,i know,yasmien kurdi
+63,ah doo doo doo,willie revillame
+64,shooting star,vina morales
+65,umaasa,6 cyclemind
+66,alam mo ba,vina morales
+67,manila,hotdog
+68,mabuti pa sila,gary granada
+69,beautiful girl,jose mari chan
+70,the way you look at me,christian bautista
+71,buloy,parokya ni edgar
+72,bagsakan,parokya ni edgar
+73,oka tokat,parokya ni edgar
+74,harana,parokya ni edgar
+75,picha pie,parokya ni edgar
+76,halaga,parokya ni edgar
+77,inuman na,parokya ni edgar
+78,swimming beach,parokya ni edgar
+79,sorry na,parokya ni edgar
+80,mr.suave,parokya ni edgar
+81,yes yes show,parokya ni edgar
+82,chikinini,parokya ni edgar
+83,firt day punk,parokya ni edgar
+84,mang jose,parokya ni edgar
+85,para sayo,parokya ni edgar
+86,papa cologne,parokya ni edgar
+87,one & only you,parokya ni edgar
+88,lutong bahay,parokya ni edgar
+89,macho,parokya ni edgar
+90,crying time,victor wood
+91,paper roses,victor wood
+92,the great pretender,victor wood
+93,chuva chu chu,jolina magdangal
+94,kapag ako ay nagmahal,jolina magdangal
+95,honey my love so sweet,april boy
+96,paulit ulit,april boy
+97,umiiyak ang puso,april boy
+98,ye ye bonel,april boy
+99,i will be there,kyla
+100,because of you,kyla
+101,hanggang ngayon,kyla
+102,broken sonnet,hale
+103,the day you said goodnight,hale
+104,kahit pa,hale
+105,kung wala ka,hale
+106,basta't kasama kita,dingdong avanzado
+107,happy kaarawan,vhong navarro
+108,mr.suave,vhong navarro
+109,ayos na ang buto buto,vhong navarro
+110,chickboy,vhong navarro
+111,pamela,vhong navarro
+112,totoy bibo,vhong navarro
+113,yugyugan na,vhong navarro
+114,my 1st broken heart,iya villania
+115,lumang tugtugin,apo hiking society
+116,kahit sandali,jennilyn mercado
+117,suntok sa buwan,apo hiking society
+118,ewan,apo hiking society
+119,kahit maputi na ang buhok ko,rey valera
+120,blue jeans,apo hiking society
+121,anak,freddie aguilar
+122,minsan lang kitang iibigin,ariel rivera
+123,halik,aegis
+124,shout for joy,gary valenciano
+125,natutulog ba ang diyos,gary valeciano
+127,sumayaw sumunod,gary valenciano
+128,mas mahal na kita ngayon,michael v.
+129,humanap ka ng panget,andrew e.
+130,modelong charing,blackjack
+131,philippine geography,yoyoy villame
+132,bawat bata,apo hiking society
+133,kaibigan,apo hiking society
+134,panalangin,apo hiking society
+135,batangbata ka pa,apo hiking society
+136,sana,shamrock
+137,pagkakataon,shamrock
+138,ngiti,ronnie liang
+139,forever's not enough,sarah geronimo
+140,sino nga ba sya?,sarah geronimo
+141,muli,bugoy drilon
+142,anak ng pasig,geneva cruz
+143,di lang ikaw,juris
+149,ikaw sana,ogie alcasid
+150,hanggang ngayon,ogie alcasid
+151,kung mawawala ka,ogie alcasid
+152,wag ka lang mawawala,ogie alcasid
+153,bakit ngayon ka lang,ogie alcasid
+154,mahal kita walang iba,ogie alcasid
+155,line to heaven,introvoys
+156,next in line,wency cornejo
+157,kisapmata,rivermaya
+158,your love,alamid
+159,alipin,shamrock
+160,1st day high,kamikazee
+161,halaga,parokya ni edgar
+162,your song,parokya ni edgar
+163,wag mo na sana,parokya ni edgar
+164,action,pat castillo
+165,ako ang nagwagi,dulce
+166,ako ay pilipino,kuh ledesma
+167,alone in the rain,pops fernandez
+168,always,marco sison
+169,isang lahi,regine velasquez
+170,pasubali,spongecola
+171,ikaw,sharon cuneta
+172,dragonfly,spongecola
+173,di bale na lang,gary valenciano
+174,steep,nina
+175,salamat,yeng constantino
+176,luha,aegis
+177,214,rivermaya
+178,hold on,shamrock
+179,akap,imago
+180,borrowed time,cueshe
+181,sana,gaggong rapper
+182,bitiw,spongecola
+183,superhero,rocksteddy
+184,ambisyoso,kamikazee
+185,gitara,parokya ni edgar
+186,narda,kamikazee
+187,hanggang tingin,kamikazee
+188,hindo mo ba alam,siakol
+189,elmer,gloc9
+190,eman,parokya ni edgar
+191,pangako,cueshe
+192,tropa,siakol
+193,perpekto,dong abay
+194,tuloy pa rin,neocolors
+195,dahil minamahal kita,renz verano
+196,miss na miss kita,father and sons
+197,kasalanan ba,men oppose
+198,ika'y mahal pa rin,rockstar
+198,dahil mahal kita,jovit baldivino
+199,promise me,j brothers
+200,baka mayroong iba,jerome abalos
+201,larawan kupas,jerome abalos
+202,tanging sayo,jerome abalos
+203,skin,grin department
+204,otso pa,grin department
+205,nandito ako,lea salonga
+206,buy 1 take 1,grin department
+207,torpedo,eraserheads
+208,when i meet you,kc conception
+209,wag kang matakot,eraserheads
+210,i love you,willie rivellame
+211,bakit ka iiyak,jeremiah
+212,nanghihinayang,jeremiah
+213,i,6cyclemind
+214,beer,itchyworms
+215,nobela,join the club
+216,umaaraw umuulan,rivermaya
+217,gunita,spongecola
+218,para sa masa,eraserheads
+219,ikaw lamang,silent sanctuary
+220,magpakailaman,rocksteddy
+221,balang araw,siakol
+222,gabay,siakol
+223,habang ang lahat,siakol
+224,parting time,rockstar
+225,haplos,shamrock
+226,paano,jovit baldivino
+227,paano,shamrock
+228,sumayaw,gloc9
+229,stars,callalily
+230,kasalanan,orient pearl
+231,keep on loving you,renz verano
+232,kung sakali,ogie alcasid
+233,namumuro ka na,lukas
+234,pag-ibig ko sayo hindi magbabago,men oppose
+235,ikaw sana,ogie alcasid
+236,takipsilim,callalily
+237,sanctuary,callalily
+238,yakap,siakol
+239,yakap,callalily
+240,pasan,callalily
+241,take my hand,callalily
+242,the final song,callalily
+243,jejemon,blank tape
+244,chika lang yon,blank tape
+245,lapit,yeng constantino
+246,kung ikaw,lito camo
+247,nosi balasi,sampaguita
+248,porque,maldita
+249,tambay,spongecola
+250,antukin,rico blanco
+251,sabihin,zelle
+252,sana kunin ka na ni lord,pokwang
+253,wag na,yeng constantino
+254,aaminin,6cyclemind
+255,alapaap,eraserheads
+256,disney,tanya markova
+257,nag-iisa,frio
+258,hiwaga,siakol
+259,gusto ko lamang sa buhay,itchyworms
+260,penge naman ako nyan,itchyworms
+261,linda blair,tanya markova
+262,pa rodie fernandez,tanya markova
+263,pakiusap lang lasingin nyo ako,parokya ni edgar
+264,kapag lasing malambin,mayonnaise
+265,if,rivermaya
+266,sandata,shamrock
+267,asahan mo,siakol
+268,ituloy mo lang,siakol
+269,gawin langit ang mundo,siakol
+270,kahit maputi na ang buhok ko,soap dish
+271,upuan,gloc9
+272,i must be free,salbakuta
+273,patawarin mo,repablikan
+274,dumpsite,dong abay
+275,cool off,yeng constantino
+276,bakit,cueshe
+277,stay,cueshe
+278,noypi,bamboo
+279,overdrive,eraserheads
+280,magbalik,callalily
+281,prolemang puso,jude michael
+282,iniibig kita,roel cortez
+283,sabihin mo lagi,men oppose
+284,sana ay magbalik,april boy
+285,sana'y bigyan mo ng pansin,j brothers
+286,sigaw ng puso,father and sons
+287,sumpa ko,quamo
+288,wala pa ring iba,rockstar
+289,bakit,rockstar
+290,sana pag-ibig mo ay tunay na,j brothers
+291,sana ay mahalin mo rin ako,april boy
+293,sabi mo ako lamang,men oppose
+294,honey my love so sweet,april boy
+295,walang iwanan,6cyclemind
+296,teka lang,siakol
+297,sige,6cyclemind
+298,sa pag-ikot ng mundo,siakol
+299,alab ng puso,rivermaya
+300,maselang bahaghari,eraserheads
+301,lagim,siakol
+302,christmas single,rocksteddy
+303,aanhin,siakol
+304,banana,blank tape
+305,ako'y sayo at ika'y akin lamang,true faith
+306,gisingin ang puso,liezel garcia
+307,pangarap lang kita,parokya ni edgar
+308,kahit walang sabihin,rico blanco
+309,tnt,pupil
+310,pera pera,sandwich
+311,nang dahil sa pag-ibig,bugoy drilon
+312,dont tie me down,kyla
+313,fallin,sarah geronimo
+314,larawan,eevee
+315,lagi na lang,kiss jane
+316,when i hear you call,gary valenciano
+317,i'll be there,sarah geronimo
+318,i dont want to fall,juriz
+319,hindi na bali,bugoy drilon
+320,baka sakali,jay jimenez
+321,ambotsa,rivermaya
+322,munting hiling,hanna flores
+323,ikaw pa rin,willie revillame
+324,ikaw pa rin,juana
+325,tumatakbo,mojofly
+326,torete,moonstar 88
+327,to love you more,sarah geronimo
+328,so slow,freestyle
+329,senti,yano
+330,salawahan,boyfriends
+331,o babe,jeremiah
+332,nais kong malaman mo,boyfriends
+333,naalala ka,sharon cuneta
+334,muntik ng maabot ang langit,true faith
+335,mula sa puso,jude michael
+336,minamalas,mojofly
+337,kapag ako ay nagmahal,jolina magdangal
+338,ikaw,regine velasquez
+339,hindi magbabago,randy santiago
+340,first love,boyfriends
+341,dahil mahal kita,boyfriends
+342,dahil mahal na mahal kita,roselle naval
+343,before i let you go,freestyle
+344,bakit,mayonnaise
+345,pintig ng puso,yasmin kurdi
+346,ngayong wala ka na,kyla
+347,muli,janno gibbs
+348,kailan kaya,michael v
+349,mapagkunwari,faith cuneta
+350,ikaw,gerald santos
+351,alinlangan,jolina magdangal
+352,huwag na lang kaya,true faith
+353,tuloy pa rin ako,side a
+354,wag mo na sana,parokya ni edgar
+355,una,excerpts
+356,tsinelas,yano
+357,toyang,eraserheads
+358,talaga naman,the dawn
+359,tag-ulan,after image
+360,tag-araw,after image
+361,tabing ilog,barbie's cradle
+362,salamat,the dawn
+363,paglisan,color it red
+364,pare ko,eraserheads
+365,na naman,color it red
+366,may pag-ibig pa kaya,south border
+367,mangarap ka,after image
+368,long hair,weedd
+369,laklak,the teeth
+370,kay sarap,the boss
+371,kailaman,introvoys
+372,iisang bangka tayo,the dawn
+373,ako na lang,1017
+374,goodboy,black dyak
+375,di na ko aasa pa,introvoys
+376,bilanggo,rizal underground
+377,banal na aso santong kabayo,yano
+378,bakit ba?,siakol
+379,ambon,true faith
+380,the coconut nut,smokey mountain
+381,paraiso,smokey mountain
+382,better world,smokey mountain
+383,naririto ako,willie revillame
+384,kung para sayo,willie revillame
+385,i love you,willie revillame
+386,one more chance,piolo pascual
+387,pilit,hilera
+388,sulat,moonstar 88
+390,pinoy ako,orange and lemon
+391,sakayan ng jeep,nikki gil
+392,lunod,danita paner
+393,dinamayan,6cyclemind
+394,define,hilera
+395,ang pag-ibig kong ito,moonstar 88
+396,hanggang kailan,orange and lemon
+397,i never knew love,lovi poe
+398,lagi mo na lang akong dinedeadma,rocksteddy
+399,pano nangyari yon,mayonnaise
+400,pansinin mo,juana
+401,biglaan,6 cyclemind
+402,kung wala na nga,6 cyclemind
+403,kasalanan,6 cyclemind ft. gloc9
+404,pakiusap,acel
+405,one love,acel
+406,everyday,agot isidro
+407,cotabato,asin
+408,usok,asin
+409,pagbabalik,asin
+410,ang buhay ko,asin
+411,musika ang buhay,asin
+412,tuldok,asin
+413,bayan kong sinilangan,asin
+414,sana,amy nobleza
+415,pakisabi na lang,aiza seguerra
+416,far away,bamboo
+417,kung ako na lang sana,bituin escalante
+418,dahil tanging ikaw,bugoy drilon
+419,ikaw lang mamahalin,bugoy drilon
+420,pagkat mahal kita,bugoy drilon
+421,sana'y ibigin mo,bugoy drilon
+422,mara clara,carol banawa
+423,tanging yaman,carol banawa
+424,till my heartaches end,carol banawa
+425,pyramid,charice pempengco
+426,somewhere,charice pempengco
+427,reset,charice pempengco
+428,always you,charice pempengco
+429,tell me your name,christian bautista
+430,please be careful in my heart,christian bautista
+431,laging ikaw,christian bautista
+432,pasensya na,cueshe
+433,minsan,cueshe
+434,minsan,eraserheads
+435,masaya ako sayo,curse one
+436,nabigha mo,curse one
+437,pagmamahal sayo,curse one
+438,nagmahal ako ng bakla,dagtang lason
+439,hulog ng langit,donna cruz
+440,walang iba,ezra
+441,i will,ezra
+442,kanlungan,erick santos
+443,everytime,frencheska farr
+444,suddenly its magic,frencheska farr
+445,minsan pa,faith cuneta
+446,kaleidoscope world,francis magalona
+447,lando,gloc9
+448,bahala na,gloc9
+449,martilyo,gloc9
+450,tao,gloc9
+451,the bobo song,gloc9
+452,tinta,gloc9
+453,eddie ako,gloc9
+454,kabet,gaggong rapper
+455,one hello,gary valenciano
+456,tayong dalawa,gary valenciano
+457,warrior is a child,gary valenciano
+458,take me out of the dark,gary valenciano
+459,nandito,general luna
+460,aso't pusa,hale
+461,bulalakaw,hale
+462,kalesa,hale
+463,i love you goodby,juris fernandez
+464,i dont want to fall,juris fernandez
+465,opposite attract,juriz fernandez
+466,kung malaya lang ako,kris lawrence
+467,when i see you smile,kris lawrence
+468,thank you,kris lawrence
+469,sunddly,kris lawrence
+470,paano,kris lawrence
+471,how can i fall,kris lawrence
+472,bakit,kyla
+473,i dont want you to go,kyla
+474,kasiping ka,la diva
+475,bakit kung sino pa,lloyd umali
+476,baby now that i found you,mymp
+477,beauty and madness,mymp
+478,i'll never get over you,mymp
+479,kailan,mymp
+480,game of love,mymp
+481,friend of mine,mymp
+482,di ako bakla,michael v.
+483,kung kailangan mo bato,michael v.
+484,mas tanga ko sayo,michael v.
+485,my b.o na ako,michael v.
+486,may isa kumagat,michael v.
+487,multo,michael v.
+488,sabog sabog tayo,michael v.
+489,binta,repablikan
+490,aking pagmamahal,repablikan
+491,kahit di na tayo,repablikan
+492,luha (rap),repablikan
+493,first love (rap),repablikan
+494,kung kailangan mo ako,rey valera
+495,come closer,rico blanco
+496,start again,rico blanco
+497,your universe,rico blanco
+498,makakaasa ka,rivermaya
+499,kung ayaw mo wag mo,rivermaya
+500,liwanag sa dilim,rivermaya
+501,hinahanap hanap kita,rivermaya
+502,saranghae,sabrina
+503,only you,sam milby
+504,and i love you so,sam milby
+505,a very special love,sarah geronimo
+506,you change my life,sarah geronimo
+507,something you my life,sarah geronimo
+508,dahil minahal mo ako,sarah geronimo
+509,sa iyo,sarah geronimo
+510,record breaker,sarah geronimo
+511,can this be love,sarah geronimo
+512,all this time,six part invention
+513,only for you,six part invention
+514,makita kang muli,sugarfree
+515,crazy for you,spongecola
+516,jeepney,spongecola
+517,puso,spongecola
+518,sa bingit ng isang paalam,spongecola
+519,all we need,spongecola
+520,closer you and i,spongecola
+521,movie,spongecola
+522,saan ang barkada,spongecola
+523,makapiling ka,spongecola
+524,kasama kang tumanda,toni gonzaga
+525,kasalanan ko ba,toni gonzaga
+526,alert the armony,urbandub
+527,first of summer,urbandub
+528,don romantiko,vhong navarro
+529,hari ng dance floor,vhong navarro
+530,center of the sun,wolfgang
+531,natutulog kong mundo,wolfgang
+532,mula sa kamandag,wolfgang
+533,mata ng diyos,wolfgang
+534,as oceans,wolfgang
+535,cas of clowns,wolfgang
+536,kahit na,x-crew
+537,sa piling mo,x-crew
+538,nagsusumamo,x-crew
+539,tama na,x-crew
+540,please tell me,x-crew
+541,walang hanggan,yeng constantino
+542,baliw,kiss jane
+543,bumuhos man ang ulan,jericho rosales
+544,malayo pa ang umaga,aria clemente
+545,patuloy ang pangarap,angeline quinto
+546,umaasa lang sayo,six part invention
+547,ligaw,ney dimaculangan
+548,wag mo akong iwanan mag-isa,angeline quinto
+549,charing,1017
+550,ito ang gusto ko,francis magalona
+551,siya na nga kaya,julie ann san jose
+552,aking mundo,julie ann san jose
+553,pusong lito,kim chiu
+554,peng you,kim chiu
+555,crazy love,kim chiu
+556,kering keri,kim chiu
+557,tell i meet you,kuh ledesma
+558,ngaun bukas at kahapon,wency cornejo
+559,hanggang,wency cornejo
+600,how can i tell you,wency cornejo
