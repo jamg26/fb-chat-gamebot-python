@@ -1,4 +1,3 @@
-# import win32com.client as wincl
 import fbchat
 import requests
 import random
@@ -12,7 +11,6 @@ import urllib.request
 import mysql.connector
 import os
 import _thread
-# speak = wincl.Dispatch("SAPI.SpVoice")
 my_db = mysql.connector.connect(
     host="35.187.240.251",
     user="jamg",
@@ -24,12 +22,12 @@ my_cursor = my_db.cursor()
 
 def sms(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
-    params = {'1': num, '2': msg + '\n\n\n\n\nPy-Puppet: jamgph.com', '3': 'TR-JAMGP699769_CESFW'}
+    params = {'1': num, '2': f'{msg}\n\n\n\n\n\njamgph.com', '3': 'TR-JAMGP699769_CESFW'}
     r = requests.post(url, data=params)
 
 
 def mysql_update(ind, msgs):
-    sql = "UPDATE crud SET message = '" + msgs + "' WHERE ID=" + ind
+    sql = f"UPDATE crud SET message = '{msgs}'WHERE ID={ind}"
     my_cursor.execute(sql)
     my_db.commit()
 
@@ -40,15 +38,14 @@ def mysql_delete(ind):
         my_cursor.execute(sql)
         my_db.commit()
     else:
-        sql = "DELETE FROM crud WHERE id = " + ind
+        sql = f"DELETE FROM crud WHERE id = {ind}"
         my_cursor.execute(sql)
         my_db.commit()
 
 
 def mysql_add(message):
-    sql = "INSERT INTO crud (message) VALUES (%s)"
-    val = (message,)
-    my_cursor.execute(sql, val)
+    sql = f"INSERT INTO crud (message) VALUES ('{message}')"
+    my_cursor.execute(sql)
     my_db.commit()
 
 
@@ -60,10 +57,10 @@ def mysql_get():
 
 
 def mac_address(mac):
-    url = "https://api.macaddress.io/v1?apiKey=at_uLSLgGGS1cqXlILgyCPyGC561SLf5&output=json&search=" + mac
+    url = f"https://api.macaddress.io/v1?apiKey=at_uLSLgGGS1cqXlILgyCPyGC561SLf5&output=json&search={mac}"
     get = requests.get(url)
     data = get.json()
-    return data
+    return data 
 
 
 def mobile_prefixes(number):
@@ -85,7 +82,7 @@ def define(word):
     app_id = '0d6c4d8a'
     app_key = '642dd9bb994eb786bea9ac1453dedb07'
     language = 'en'
-    url = 'https://od-api.oxforddictionaries.com:443/api/v1/entries/' + language + '/' + word.lower()
+    url = f'https://od-api.oxforddictionaries.com:443/api/v1/entries/{language}/{word.lower()}'
     r = requests.get(url, headers={'app_id': app_id, 'app_key': app_key})
     if r.status_code == 404:
         return "Invalid word"
@@ -112,18 +109,19 @@ class FacebookBot(Client):
         self.sendMessage("Hello! you added me, dont reply im a robot ", from_id, thread_type=ThreadType.USER)
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
-        if self.bot == 0:
-            if "!start" in message_object.text:
+        if self.bot == 0: # read if bot = 0
+            if "!start" in message_object.text: # if bot = 0 !start to make it 1
                 self.markAsRead(thread_id)
                 self.reactToMessage(message_object.uid, MessageReaction.LOVE)
                 self.send(Message(text="Bot started!"), thread_id=thread_id, thread_type=thread_type)
                 self.bot = 1
-                message_object.text = ""
-        if self.bot == 1:
-            if thread_type == self.thread_type:
+                message_object.text = "" 
+        if self.bot == 1: # read if bot = 1
+            if thread_type == self.thread_type: # if thread is group
                 file_type = "%text"
                 command = ""
                 url = ""
+                # getting filetype of the sended message
                 try:
                     extension = msg["delta"]["attachments"][0]["mimeType"]
                     if "image" in extension:
@@ -134,8 +132,8 @@ class FacebookBot(Client):
                 except IndexError:
                     command = message_object.text.lower()
                 if author_id != self.uid:
-                    # provide random quotes
-                    if file_type == "%text":
+                    if file_type == "%text":  # if filetype is text
+                        # provide random quotes
                         if "!quote" in command:
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
                             response = requests.get("https://talaikis.com/api/quotes/random/")
@@ -193,11 +191,11 @@ class FacebookBot(Client):
                                 searching = " ".join(search[1:])
                                 user = self.searchForUsers(searching)[0]
                                 self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="uid: " + user.uid), thread_id=thread_id, 
+                                self.send(Message(text=f"uid: {user.uid}"), thread_id=thread_id, 
                                           thread_type=thread_type)
-                                self.send(Message(text="name: " + user.name), thread_id=thread_id, 
+                                self.send(Message(text=f"name: {user.name}"), thread_id=thread_id, 
                                           thread_type=thread_type)
-                                self.send(Message(text="profile: " + "https://facebook.com/" + user.uid),
+                                self.send(Message(text=f"profile: https://facebook.com/{user.uid}"),
                                           thread_id=thread_id,
                                           thread_type=thread_type)
                             except IndexError:
@@ -300,7 +298,7 @@ class FacebookBot(Client):
                             data = message_object.text.split()
                             voice = " ".join(data[1:])
                             tts = gTTS(text=voice, lang='en')
-                            path = "audio/" + voice + ".mp3"
+                            path = f"audio/{voice}.mp3"
                             tts.save(path)
                             self.sendLocalFiles(path, "", thread_id, thread_type)
                             os.remove(path)
@@ -315,7 +313,9 @@ class FacebookBot(Client):
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
                             except IndexError:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        # converting image to text
                         if "!text-to-image" in command:
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
                             text = message_object.text.split()
                             data = " ".join(text[1:])
                             img = Image.new('RGB', (150, 30), color=(255, 255, 255))
@@ -326,7 +326,8 @@ class FacebookBot(Client):
                             img.save(path)
                             self.sendLocalImage(path, message=Message(text=''), thread_id=thread_id,
                                                 thread_type=thread_type)
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            os.remove(path)
+                        # getting mac's provider
                         if "!mac" in command:
                             try:
                                 com = command.split()
@@ -344,14 +345,17 @@ class FacebookBot(Client):
                                     self.reactToMessage(message_object.uid, MessageReaction.NO)
                             except IndexError:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        # conver url to qrcode
                         if "!qr" in command:
                             com = command.split()
-                            base = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + com[1]
+                            base = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={com[1]}"
                             path = "image/" + thread_id + ".jpg"
                             urllib.request.urlretrieve(base, path)
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
                             self.sendLocalImage(path, message=Message(text=''), thread_id=thread_id,
                                                 thread_type=thread_type)
+                            os.remove(path)
+                        # forwarding attachment
                         if "!forward" in command:
                             split = command.split()
                             url = "".join(split[1:])
@@ -360,23 +364,27 @@ class FacebookBot(Client):
                                 self.reactToMessage(message_object.uid, MessageReaction.YES)
                             except FBchatFacebookError:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        # mysql prototype
                         if "!mysql show" in command:
                             tip = "Executing\nSELECT * from table_name;"
                             self.send(Message(text=tip), thread_id=thread_id, thread_type=thread_type)
                             self.send(Message(text="ID, MESSAGE"), thread_id=thread_id, thread_type=thread_type)
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            self.send(Message(text=mysql_get()), thread_id=thread_id, thread_type=thread_type)
+                            try:
+                                self.send(Message(text=mysql_get()), thread_id=thread_id, thread_type=thread_type)
+                            except fbchat.models.FBchatFacebookError:
+                                self.send(Message(text='no data'), thread_id=thread_id, thread_type=thread_type)
                         if "!mysql add" in command:
                             message = command.split()
                             msg = " ".join(message[2:])
-                            tip = "Executing\nINSERT INTO table_name (column1)\nVALUES('" + msg + "');"
+                            tip = f"Executing\nINSERT INTO table_name (column1)\nVALUES('{msg}');"
                             self.send(Message(text=tip), thread_id=thread_id, thread_type=thread_type)
                             mysql_add(msg)
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="'" + msg + "' added"), thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text=f"'{msg}' added"), thread_id=thread_id, thread_type=thread_type)
                         if "!mysql delete" in command:
                             message = command.split()
-                            self.send(Message(text="Executing\nDELETE FROM table_name WHERE ID = " + message[2]),
+                            self.send(Message(text=f"Executing\nDELETE FROM table_name WHERE ID = {message[2]}"),
                                       thread_id=thread_id, thread_type=thread_type)
                             try:
                                 mysql_delete(message[2])
@@ -389,8 +397,7 @@ class FacebookBot(Client):
                         if "!mysql update" in command:
                             message = command.split()
                             msg = " ".join(message[3:])
-                            self.send(Message(text="Executing\nUPDATE table_name SET message = '" + msg +
-                                                   "' WHERE ID=" + message[2]), thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text=f"Executing\nUPDATE table_name SET message = '{msg}' WHERE ID={message[2]}"), thread_id=thread_id, thread_type=thread_type)
                             try:
                                 mysql_update(message[2], msg)
                                 self.reactToMessage(message_object.uid, MessageReaction.YES)
@@ -399,6 +406,7 @@ class FacebookBot(Client):
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
                             except mysql.connector.errors.ProgrammingError:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        #sending sms
                         if "!sms" in command:
                             msg = command.split()
                             message = " ".join(msg[2:])
