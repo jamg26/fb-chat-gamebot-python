@@ -1,6 +1,7 @@
 import fbchat
 import requests
 import random
+from random import shuffle
 from fbchat import Client
 from fbchat.models import *
 import lyricwikia
@@ -22,7 +23,8 @@ my_cursor = my_db.cursor()
 
 def sms(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
-    params = {'1': num, '2': f'{msg}\n\n\n\n\n\njamgph.com', '3': 'TR-JAMGP699769_CESFW'}
+    params = {'1': num, '2': f'{msg}\n\n\n\n\n\njamgph.com',
+              '3': 'TR-JAMGP699769_CESFW'}
     r = requests.post(url, data=params)
 
 
@@ -60,7 +62,7 @@ def mac_address(mac):
     url = f"https://api.macaddress.io/v1?apiKey=at_uLSLgGGS1cqXlILgyCPyGC561SLf5&output=json&search={mac}"
     get = requests.get(url)
     data = get.json()
-    return data 
+    return data
 
 
 def mobile_prefixes(number):
@@ -69,7 +71,8 @@ def mobile_prefixes(number):
                  "0981", "0989", "0992", "0998", "0999"]
     globe_tm = ["0817", "0905", "0906", "0915", "0916", "0917", "0926", "0927", "0935", "0936", "0945", "0955", "0956",
                 "0965", "0966", "0967", "0975", "0977", "0994", "0995", "0997"]
-    sun = ["0922", "0923", "0924", "0925", "0931", "0932", "0933", "0934", "0941", "0942", "0943", "0944"]
+    sun = ["0922", "0923", "0924", "0925", "0931", "0932",
+           "0933", "0934", "0941", "0942", "0943", "0944"]
     if number in smart_tnt:
         return "Smart or Talk N' Text"
     if number in globe_tm:
@@ -85,7 +88,7 @@ def define(word):
     url = f'https://od-api.oxforddictionaries.com:443/api/v1/entries/{language}/{word.lower()}'
     r = requests.get(url, headers={'app_id': app_id, 'app_key': app_key})
     if r.status_code == 404:
-        return "Invalid word"
+        return "Not found"
     else:
         da = r.json()
         try:
@@ -96,6 +99,208 @@ def define(word):
             return "".join(res)
 
 
+def rand_a():
+    a = random.randint(0, 9999)
+    return a
+
+
+def rand_b():
+    b = random.randint(0, 9999)
+    return b
+
+
+class GameBot(Client):
+    answer = ""
+    thread_id = ""
+    round = 1
+    users = {}
+    users_count = 1
+    joined = 0
+    question = ""
+    admin_uid = "100005766793253"
+
+    def join_user(self, id, name):
+        self.users[self.users_count] = [id, name, 0]
+        self.users_count += 1
+
+    def text_twist(self):
+        global leng
+        global word
+        # opening file putting word in words
+        with open('words.txt', 'r') as f:
+            words = []
+            for x in f:
+                words.append(x)
+        # generating random line in words.txt
+        ran = random.randint(0, 28700)
+        # getting a line of word
+        word = words[ran]  # answer
+
+        # getting length of a word
+        leng = len(word) - 1
+        # rumbling range of number
+        x = [i for i in range(leng)]
+
+        shuffle(x)
+
+        # referencing numbers in every char
+        shuff = []
+        for y in x:
+            shuff.append(word[y])
+
+        # joining array of letters
+        shuff = "".join(shuff)
+        self.question = f"{shuff}"
+        self.answer = word.rstrip()
+        client.send(Message(text=f"ROUND {self.round}\nTEXT TWIST"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message(text=self.question),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+
+    def shuffle(self):
+        x = [i for i in range(leng)]
+        shuffle(x)
+        shuff = []
+        for y in x:
+            shuff.append(word[y])
+        shuff = "".join(shuff)
+        self.question = f"{shuff}"
+        self.repeat()
+
+    def math_game(self):
+        game = random.randint(1, 3)
+        if game == 1:
+            return self.math_add()
+        if game == 2:
+            return self.math_difference()
+        if game == 3:
+            return self.text_twist()
+
+    def math_add(self):
+        a = rand_a()
+        b = rand_b()
+        self.answer = f"{a+b}"
+        self.question = f"{a} + {b} = ?"
+        client.send(Message(text=f"ROUND {self.round}\nMATH"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message(text=self.question),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+
+    def math_difference(self):
+        a = rand_a()
+        b = rand_b()
+        self.answer = f"{a-b}"
+        self.question = f"{a} - {b} = ?"
+        client.send(Message(text=f"ROUND {self.round}\nMATH"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message(text=self.question),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+
+    def repeat(self):
+        client.send(Message(text=self.question),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+
+    def onQprimer(self, **kwargs):
+        client.send(Message(text="Gamebot ON!"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        self.math_game()
+
+    def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
+        command = message_object.text.lower()
+        # gamebot only selected thread
+        if thread_id == self.thread_id:
+            if author_id != self.uid:
+                if "!game off" in command:
+                    if author_id == self.admin_uid:
+                        self.reactToMessage(
+                            message_object.uid, MessageReaction.YES)
+                        self.send(Message(text="Gamebot OFF!"),
+                                  thread_id=thread_id, thread_type=thread_type)
+                        start_bot()
+                if "!clue" in command:
+                    if isinstance(self.answer, str):
+                        self.reactToMessage(
+                            message_object.uid, MessageReaction.YES)
+                        self.send(Message(text=define(self.answer)),
+                                  thread_id=thread_id, thread_type=thread_type)
+                if "!shuffle" in command:
+                    if isinstance(self.answer, str):
+                        try:
+                            self.shuffle()
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                        except NameError:
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.NO)
+                            
+                if "!pass" in command:
+                    self.reactToMessage(message_object.uid,
+                                        MessageReaction.YES)
+                    self.math_game()
+                if "!repeat" in command:
+                    self.reactToMessage(message_object.uid,
+                                        MessageReaction.YES)
+                    self.repeat()
+                if "!join" in command:
+                    join = 0
+                    try:
+                        name = command.split()
+                        for x in self.users:
+                            if author_id in self.users[x][0]:
+                                join = 1
+                        if join == 0:
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.join_user(author_id, name[1])
+                            self.send(Message(text=f"{name[1]} joined."),
+                                      thread_id=thread_id, thread_type=thread_type)
+                        else:
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.NO)
+                            self.send(Message(text="You already joined."),
+                                      thread_id=thread_id, thread_type=thread_type)
+                    except IndexError:
+                        self.reactToMessage(
+                            message_object.uid, MessageReaction.NO)
+                        print("Index error")
+                if "!score" in command:
+                    for x in self.users:
+                        self.reactToMessage(
+                            message_object.uid, MessageReaction.YES)
+                        self.send(Message(text=f"{self.users[x][1]} = {self.users[x][2]}"),
+                                  thread_id=thread_id, thread_type=thread_type)
+                if "!help" in command:
+                    self.reactToMessage(
+                            message_object.uid, MessageReaction.YES)
+                    self.send(Message(text="COMMAND LIST:\n\n"
+                                                   "!join (name) - join game\n\n"
+                                                   "!clue - word definition\n\n"
+                                                   "!shuffle - shuffle word\n\n"
+                                                   "!score - show scores\n\n"
+                                                   "!repeat - repeat question\n\n"
+                                                   "!shuffle - shuffle word letters\n\n"),
+                                      thread_id=thread_id,
+                                      thread_type=thread_type)
+                    
+                if self.answer in command:
+                    self.joined = 0
+                    for x in self.users:
+                        if author_id in self.users[x]:
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.LOVE)
+                            self.users[x][2] += 1
+                            self.send(Message(text="You got it!"),
+                                      thread_id=thread_id, thread_type=thread_type)
+                            self.joined = 1
+                            self.round += 1
+                            self.math_game()
+                    if self.joined == 0:
+                        self.reactToMessage(
+                            message_object.uid, MessageReaction.YES)
+                        self.send(Message(text="You need to type !join yourname"),
+                                  thread_id=thread_id, thread_type=thread_type)
+
+
 class FacebookBot(Client):
     mirror = 0
     bot = 1  # activate bot
@@ -103,21 +308,23 @@ class FacebookBot(Client):
     admin_uid = "100005766793253"
     bot_name = "!bot start"
     game = 0
-    
+
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
-        self.sendMessage("Hello! you added me, dont reply im a robot ", from_id, thread_type=ThreadType.USER)
+        self.sendMessage("Hello! you added me, dont reply im a robot ",
+                         from_id, thread_type=ThreadType.USER)
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
-        if self.bot == 0: # read if bot = 0
-            if "!start" in message_object.text: # if bot = 0 !start to make it 1
+        if self.bot == 0:  # read if bot = 0
+            if "!start" in message_object.text:  # if bot = 0 !start to make it 1
                 self.markAsRead(thread_id)
                 self.reactToMessage(message_object.uid, MessageReaction.LOVE)
-                self.send(Message(text="Bot started!"), thread_id=thread_id, thread_type=thread_type)
+                self.send(Message(text="Bot started!"),
+                          thread_id=thread_id, thread_type=thread_type)
                 self.bot = 1
-                message_object.text = "" 
-        if self.bot == 1: # read if bot = 1
-            if thread_type == self.thread_type: # if thread is group
+                message_object.text = ""
+        if self.bot == 1:  # read if bot = 1
+            if thread_type == self.thread_type:  # if thread is group
                 file_type = "%text"
                 command = ""
                 url = ""
@@ -135,18 +342,25 @@ class FacebookBot(Client):
                     if file_type == "%text":  # if filetype is text
                         # provide random quotes
                         if "!quote" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            response = requests.get("https://talaikis.com/api/quotes/random/")
-                            data = response.json()
-                            self.send(Message(text=data["quote"]), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            # response = requests.get(
+                            #     "https://talaikis.com/api/quotes/random/")
+                            # data = response.json()
+                            self.send(
+                                Message(text="not available"), thread_id=thread_id, thread_type=thread_type)
                         # bot mirroring
                         if "!mirror on" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Mirror bot on!"), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="Mirror bot on!"),
+                                      thread_id=thread_id, thread_type=thread_type)
                             self.mirror = 1
                         if "!mirror off" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Mirror bot off!"), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="Mirror bot off!"),
+                                      thread_id=thread_id, thread_type=thread_type)
                             self.mirror = 0
                         # defining words
                         if "!define" in command:
@@ -154,52 +368,65 @@ class FacebookBot(Client):
                             try:
                                 d = define(defined[1])
                                 if d == "Invalid word":
-                                    self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                    self.reactToMessage(
+                                        message_object.uid, MessageReaction.NO)
                                 else:
-                                    self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                    self.send(Message(text=d), thread_id=thread_id, thread_type=thread_type)
+                                    self.reactToMessage(
+                                        message_object.uid, MessageReaction.YES)
+                                    self.send(
+                                        Message(text=d), thread_id=thread_id, thread_type=thread_type)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # upload random images
                         if "!random image" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             url = "https://source.unsplash.com/random"
                             self.sendRemoteImage(url, message=Message(text='Random image for you'), thread_id=thread_id,
                                                  thread_type=thread_type)
                         # when name called
                         if "batibot" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             reply = ["Unsa man ?", "oh?", "seg tawag", "hello"]
-                            self.send(Message(text=random.choice(reply)), thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text=random.choice(reply)),
+                                      thread_id=thread_id, thread_type=thread_type)
                         # facebook messenger functions
                         #  change group title
                         if "!title" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             title = message_object.text.split()
                             tit = " ".join(title[1:])
-                            self.changeThreadTitle(tit, thread_id=thread_id, thread_type=thread_type)
+                            self.changeThreadTitle(
+                                tit, thread_id=thread_id, thread_type=thread_type)
                         # change users nickname
                         if "!nickname" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             nickname = message_object.text.split()
                             nick = " ".join(nickname[1:])
-                            self.changeNickname(nick, author_id, thread_id=thread_id, thread_type=thread_type)
+                            self.changeNickname(
+                                nick, author_id, thread_id=thread_id, thread_type=thread_type)
                         # search facebook
                         if "!search" in command:
                             try:
                                 search = message_object.text.split()
                                 searching = " ".join(search[1:])
                                 user = self.searchForUsers(searching)[0]
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=f"uid: {user.uid}"), thread_id=thread_id, 
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(Message(text=f"uid: {user.uid}"), thread_id=thread_id,
                                           thread_type=thread_type)
-                                self.send(Message(text=f"name: {user.name}"), thread_id=thread_id, 
+                                self.send(Message(text=f"name: {user.name}"), thread_id=thread_id,
                                           thread_type=thread_type)
                                 self.send(Message(text=f"profile: https://facebook.com/{user.uid}"),
                                           thread_id=thread_id,
                                           thread_type=thread_type)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # calculation functions
                         # addition
                         if "!add" in command:
@@ -207,100 +434,136 @@ class FacebookBot(Client):
                                 addition = message_object.text.split()
                                 adding = addition[1:]
                                 results = list(map(float, adding))
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=sum(results)), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text=sum(results)), thread_id=thread_id, thread_type=thread_type)
                             except FBchatFacebookError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except ValueError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # subtraction
                         if "!diff" in command:
                             try:
                                 difference = message_object.text.split()
-                                diff = float(difference[1]) - float(difference[2])
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=diff), thread_id=thread_id, thread_type=thread_type)
+                                diff = float(
+                                    difference[1]) - float(difference[2])
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text=diff), thread_id=thread_id, thread_type=thread_type)
                             except FBchatFacebookError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except ValueError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # multiplication
                         if "!multi" in command:
                             try:
                                 multiply = message_object.text.split()
                                 multi = float(multiply[1]) * float(multiply[2])
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=multi), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text=multi), thread_id=thread_id, thread_type=thread_type)
                             except FBchatFacebookError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except ValueError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # division
                         if "!div" in command:
                             try:
                                 division = message_object.text.split()
                                 div = float(division[1]) / float(division[2])
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=div), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text=div), thread_id=thread_id, thread_type=thread_type)
                             except FBchatFacebookError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except ValueError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         if "!mod" in command:
                             try:
                                 modulo = message_object.text.split()
                                 mod = float(modulo[1]) % float(modulo[2])
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=mod), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text=mod), thread_id=thread_id, thread_type=thread_type)
                             except FBchatFacebookError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except ValueError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # search lyrics
                         if "!lyrics" in command:
                             try:
                                 lyrics = message_object.text.split()
                                 lyrics = " ".join(lyrics[1:])
                                 lyrics = lyrics.split(',')
-                                fetch = lyricwikia.get_lyrics(lyrics[0], lyrics[1])
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=fetch), thread_id=thread_id, thread_type=thread_type)
+                                fetch = lyricwikia.get_lyrics(
+                                    lyrics[0], lyrics[1])
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text=fetch), thread_id=thread_id, thread_type=thread_type)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except LyricsNotFound:
                                 self.send(Message(text="Lyrics not found"), thread_id=thread_id,
                                           thread_type=thread_type)
                         # about bot
                         if "!about" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Python bot"), thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="Created by: Jam"), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="Python bot"),
+                                      thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text="Created by: Jam"),
+                                      thread_id=thread_id, thread_type=thread_type)
                         # pause bot
                         if "!pause" in command:
                             if author_id == self.admin_uid:
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="Bot paused!"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text="Bot paused!"), thread_id=thread_id, thread_type=thread_type)
                                 self.bot = 0
                             else:
                                 self.send(Message(text="di po ikaw boss ko"), thread_id=thread_id,
                                           thread_type=thread_type)
                         # speak bot
                         if "!speak" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             data = message_object.text.split()
                             voice = " ".join(data[1:])
                             tts = gTTS(text=voice, lang='en')
                             path = f"audio/{voice}.mp3"
                             tts.save(path)
-                            self.sendLocalFiles(path, "", thread_id, thread_type)
+                            self.sendLocalFiles(
+                                path, "", thread_id, thread_type)
                             os.remove(path)
                         # find network
                         if "!network" in command:
@@ -308,18 +571,24 @@ class FacebookBot(Client):
                             try:
                                 self.send(Message(text=mobile_prefixes(com[1])), thread_id=thread_id,
                                           thread_type=thread_type)
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
                             except FBchatFacebookError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # converting image to text
                         if "!text-to-image" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             text = message_object.text.split()
                             data = " ".join(text[1:])
-                            img = Image.new('RGB', (150, 30), color=(255, 255, 255))
-                            fnt = ImageFont.truetype('/font/Roboto-Regular.ttf', 15)
+                            img = Image.new('RGB', (150, 30),
+                                            color=(255, 255, 255))
+                            fnt = ImageFont.truetype(
+                                '/font/Roboto-Regular.ttf', 15)
                             d = ImageDraw.Draw(img)
                             d.text((10, 10), data, font=fnt, fill=(0, 0, 0))
                             path = "image/" + thread_id + '.png'
@@ -333,25 +602,29 @@ class FacebookBot(Client):
                                 com = command.split()
                                 data = mac_address(com[1])
                                 if data["vendorDetails"]["companyName"] != "":
-                                    self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                    self.reactToMessage(
+                                        message_object.uid, MessageReaction.YES)
                                     self.send(Message(text="VENDOR DETAILS\n\n"
                                                            "Company Name: \n" + data["vendorDetails"]["companyName"] +
-                                                           "\n\nCompany Address: \n" + 
+                                                           "\n\nCompany Address: \n" +
                                                            data["vendorDetails"]["companyAddress"] +
-                                                           "\n\nCountry Code: \n" + 
+                                                           "\n\nCountry Code: \n" +
                                                            data["vendorDetails"]["countryCode"]),
                                               thread_id=thread_id, thread_type=thread_type)
                                 else:
-                                    self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                    self.reactToMessage(
+                                        message_object.uid, MessageReaction.NO)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # conver url to qrcode
                         if "!qr" in command:
                             com = command.split()
                             base = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={com[1]}"
                             path = "image/" + thread_id + ".jpg"
                             urllib.request.urlretrieve(base, path)
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             self.sendLocalImage(path, message=Message(text=''), thread_id=thread_id,
                                                 thread_type=thread_type)
                             os.remove(path)
@@ -360,63 +633,93 @@ class FacebookBot(Client):
                             split = command.split()
                             url = "".join(split[1:])
                             try:
-                                self.sendRemoteFiles(url, message=None, thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                self.sendRemoteFiles(
+                                    url, message=None, thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
                             except FBchatFacebookError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # mysql prototype
                         if "!mysql show" in command:
                             tip = "Executing\nSELECT * from table_name;"
-                            self.send(Message(text=tip), thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="ID, MESSAGE"), thread_id=thread_id, thread_type=thread_type)
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.send(
+                                Message(text=tip), thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text="ID, MESSAGE"),
+                                      thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             try:
-                                self.send(Message(text=mysql_get()), thread_id=thread_id, thread_type=thread_type)
+                                self.send(
+                                    Message(text=mysql_get()), thread_id=thread_id, thread_type=thread_type)
                             except fbchat.models.FBchatFacebookError:
-                                self.send(Message(text='no data'), thread_id=thread_id, thread_type=thread_type)
+                                self.send(
+                                    Message(text='no data'), thread_id=thread_id, thread_type=thread_type)
                         if "!mysql add" in command:
                             message = command.split()
                             msg = " ".join(message[2:])
                             tip = f"Executing\nINSERT INTO table_name (column1)\nVALUES('{msg}');"
-                            self.send(Message(text=tip), thread_id=thread_id, thread_type=thread_type)
+                            self.send(
+                                Message(text=tip), thread_id=thread_id, thread_type=thread_type)
                             mysql_add(msg)
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            self.send(Message(text=f"'{msg}' added"), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.send(
+                                Message(text=f"'{msg}' added"), thread_id=thread_id, thread_type=thread_type)
                         if "!mysql delete" in command:
                             message = command.split()
                             self.send(Message(text=f"Executing\nDELETE FROM table_name WHERE ID = {message[2]}"),
                                       thread_id=thread_id, thread_type=thread_type)
                             try:
                                 mysql_delete(message[2])
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="deleted"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text="deleted"), thread_id=thread_id, thread_type=thread_type)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except mysql.connector.errors.ProgrammingError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         if "!mysql update" in command:
                             message = command.split()
                             msg = " ".join(message[3:])
-                            self.send(Message(text=f"Executing\nUPDATE table_name SET message = '{msg}' WHERE ID={message[2]}"), thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(
+                                text=f"Executing\nUPDATE table_name SET message = '{msg}' WHERE ID={message[2]}"), thread_id=thread_id, thread_type=thread_type)
                             try:
                                 mysql_update(message[2], msg)
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="updated"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(
+                                    Message(text="updated"), thread_id=thread_id, thread_type=thread_type)
                             except IndexError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                             except mysql.connector.errors.ProgrammingError:
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
-                        #sending sms
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
+                        # sending sms
                         if "!sms" in command:
                             msg = command.split()
                             message = " ".join(msg[2:])
                             number = msg[1]
                             sms(number, message)
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Message sent!"), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="Message sent!"),
+                                      thread_id=thread_id, thread_type=thread_type)
+                        if "!game on" in command:
+                            if author_id == self.admin_uid:
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                GameBot.thread_id = thread_id
+                                game_bot.listen()
+
                         # SQL Cheat sheet
                         if "!mysql cheat-sheet" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             self.send(Message(text="SELECT * FROM table_name;"), thread_id=thread_id,
                                       thread_type=thread_type)
                             self.send(Message(text="SELECT column_name FROM table_name;"), thread_id=thread_id,
@@ -437,7 +740,8 @@ class FacebookBot(Client):
                                                    ");"), thread_id=thread_id, thread_type=thread_type)
                         # show commands
                         if "!commands" in command:
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
                             self.send(Message(text="COMMAND LIST:\n\n"
                                                    "!quotes - random quotes\n\n"
                                                    "!random image - random image\n\n"
@@ -473,11 +777,14 @@ class FacebookBot(Client):
                         else:
                             # if mirror = 1
                             if self.mirror == 1:
-                                self.send(message_object, thread_id=thread_id, thread_type=thread_type)
-                                self.markAsDelivered(thread_id, message_object.uid)
+                                self.send(
+                                    message_object, thread_id=thread_id, thread_type=thread_type)
+                                self.markAsDelivered(
+                                    thread_id, message_object.uid)
                                 self.markAsRead(thread_id)
                             else:
-                                self.markAsDelivered(thread_id, message_object.uid)
+                                self.markAsDelivered(
+                                    thread_id, message_object.uid)
                                 self.markAsRead(thread_id)
                     if file_type == "%image":
                         path = "image/" + thread_id + "_temp.jpg"
@@ -489,11 +796,20 @@ class FacebookBot(Client):
 
 
 def start_bot():
-    client = FacebookBot("pybotjamgph", "jamuel26")
-    client.listen()
+    global fb_bot
+    global game_bot
+    fb_bot = FacebookBot("pybotjamgph", "jamuel26",
+                         session_cookies=session_cookies)
+    game_bot = GameBot("pybotjamgph", "jamuel26",
+                       session_cookies=session_cookies)
+    fb_bot.listen()
 
 
 def main():
+    global client
+    global session_cookies
+    client = Client("pybotjamgph", "jamuel26")
+    session_cookies = client.getSession()
     start_bot()
 
 
