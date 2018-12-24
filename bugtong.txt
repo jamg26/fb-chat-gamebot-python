@@ -57,11 +57,11 @@ isang pirasong tela lang ito, sinasaluduhan ng mga sundalo.#watawat
 panakip sa nakabotelya, yari lata.#tansan
 hindi hayop, hindi tao, pumupulupot sa tiyan mo.#sinturon
 araw-araw nabubuhay, taon-taon namamatay#kalendaryo
-sa buhatan ay may silbi, sa igiban ay walang sinabi.#bayong o basket
-lumuluha walang mata, lumalakad walang paa.#pluma o pen
+sa buhatan ay may silbi, sa igiban ay walang sinabi.#basket
+lumuluha walang mata, lumalakad walang paa.#pen
 dala mo dala ka, dala ka ng iyong dala.#sapatos
 ang uloy nalalaga ang kataway pagala-gala.#sandok
-bagamat nakatakip ay naisisilip.#salamin ng mata
+bagamat nakatakip ay naisisilip.#salamin
 hindi ako sikat na pilosopo, tulad ng henyong kapangalan ko, pero mahal din ako ng tao, dahil kinakainan ako.#plato
 hindi tao, hindi hayop, kung uminom ay salup-salop.#batya
 sa araw ay bungbong, sa gabi ay dahon.#banig
@@ -69,13 +69,13 @@ naabot na ng kamay, ipinagawa pa sa tulay.#kubyertos
 malaking supot ni mang jacob, kung sisidlan ay pataob.#kulambo
 hinila ko ang tadyang, lumapad ang tiyan.#payong
 bahay ni mang kulas, nang magibay tumaas.#payong
-sa bahay ko isinuksok, sa gubat ko binunot.#gulok/itak
+sa bahay ko isinuksok, sa gubat ko binunot.#itak
 kalesa ko sa infanta, takbo nang takbo pero nakaparada.#silyang tumba-tumba
-aling mabuting letrato ang kuhang-kuha sa mukha mo?#salamin (mirror)
+aling mabuting letrato ang kuhang-kuha sa mukha mo?#salamin
 isang tingting na matigas, nang ikiskis ay namulaklak.#posporo
 takbo roon, takbo rito, hindi makaalis sa tayong ito.#duyan
 may bibig walang panga, may tiyan walang bituka; may suso walang gatas, may puwit walang butas.#bayong
-maliit na parang sibat, sandata ng mga pantas.#pluma o pen
+maliit na parang sibat, sandata ng mga pantas.#pen
 gawa ito sa kinayas na kawayan, lalagyan ng santol, mangga at pakwan.#tiklis
 dalawang patpat, sabay lumapat.#gunting
 butasi, butasi, butas din ang tinagpi.#lambat
@@ -84,7 +84,7 @@ urong sulong, lumalamon.#lagari
 lumabas, pumasok, dala-dala ay panggapos.#karayom
 walang hininga ay may buhay, walang paa ay may kamay, mabilog na parang buwan, ang mukhay may bilang.#orasan
 sinakal ko muna, bago ko nilagari.#biyulin
-sandata ng mga paham, papel lamang ang hasaan.#pluma o pen
+sandata ng mga paham, papel lamang ang hasaan.#pen
 aso ko sa muralyon, lumukso ng pitong balon.#sungkaan
 isang malaking suman, sandalan at himlayan.#unan
 lumalalim kung bawasan, bumababaw kung dagdagan.#tapayan
@@ -109,12 +109,12 @@ kaaway ni bantay, may siyam na buhay.#pusa
 maliit pa si kumare, marunong ng humuni.#kuliglig
 kahoy ko sa marigundong, sumasangay walang dahon.#sungay ng usa
 hindi pari, hindi hari, nagdadamit ng sari-sari.#paruparo
-aling bagay sa mundo, ang inilalakad ay ulo?#suso (snail)
-munting hayop na pangahas, aaligid-aligid sa ningas.#gamu-gamo
+aling bagay sa mundo, ang inilalakad ay ulo?#suso
+munting hayop na pangahas, aaligid-aligid sa ningas.#gamu gamo
 mataas kung nakaupo mababa kung nakatayo.#aso
 bahay ng aluwagi, iisa ang haligi.#bahay ng kalapati
 usbong ng usbong, hindi naman nagdadahon.#sungay ng usa
-isang bahay na bato, ang takip ay bilao.#suso (snail)
+isang bahay na bato, ang takip ay bilao.#suso
 pagmuntiy may buntot, paglaki ay punggok.#palaka
 tinaga ko ang puno, sa dulo nagdurugo.#gumamela
 nakakalutoy walang init, umuusok kahit na malamig.#yelo
@@ -123,10 +123,8 @@ baka ko sa palupandan, ungay nakakarating kahit saan.#kulog
 may bintana ngunit walang bubungan, may pinto ngunit walang hagdanan.#kumpisalan
 pitak-pitak, silid-silid, pinto man ay di masilip.#kawayan
 sundalong negro, nakatayo sa kanto.#poste
-sapagkat lahat na ay nakahihipo;
-walang kasindumit walang kasimbaho;
-bakit mahal natit ipinakatatago.#salapi o pera
-tatlong hukom, kung wala ang isay hindi makakahatol.#apog, ikmo at bunga
+sapagkat lahat na ay nakahihipo walang kasindumit walang kasimbaho bakit mahal natit ipinakatatago.#pera
+tatlong hukom, kung wala ang isay hindi makakahatol.#bunga
 tinuktok ko ang bangka, naglapitan ang mga isda.#kampana
 bahay ni san vicente, punung-puno ng diyamante.#granada
 rubing nanggaling sa brilyante, brilyanteng nanggaling sa rubi.#itlog
@@ -153,8 +151,7 @@ ang sariway tatlo na, ang maitim ay maputi na, ang bakod ay lagas na.#matanda
 wala pa ang giyera, wagayway na ang bandera.#dahon ng saging
 nanganak ang aswang, sa tuktok nagdaan.#puno ng saging
 pag-aari mo, dala-dala mo, datapwat madalas gamitin ng iba kaysa sa iyo.#pangalan
-maaari mong makita ako sa tubig, ngunit hindi ako basa.#panganganinag (reflection)
+maaari mong makita ako sa tubig, ngunit hindi ako basa.#panganganinag
 lupa ni mang juan, kung sinu-sino ang dumadaan.#kalsada
 bahay ko sa pandakan, malapad ang harapan.#pantalan
 alin sa mga santa ang apat ang paa?#sta. mesa
-

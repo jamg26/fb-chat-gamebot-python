@@ -12,7 +12,6 @@ from PIL import Image, ImageDraw, ImageFont
 import urllib.request
 import mysql.connector
 import os
-import _thread
 my_db = mysql.connector.connect(
     host="35.187.240.251",
     user="jamg",
@@ -20,6 +19,10 @@ my_db = mysql.connector.connect(
     database="bot"
 )
 my_cursor = my_db.cursor()
+
+
+def cls():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def sms(num, msg):
@@ -111,20 +114,39 @@ def rand_b():
 
 
 class GameBot(Client):
-    answer = ""
-    thread_id = ""
-    round = 1
-    users = {}
-    users_count = 1
-    joined = 0
-    question = ""
-    admin_uid = "100005766793253"
-    game_math = 0
+    # main variables
+    answer = "" # game answer
+    thread_id = "" # game room id
+    rounds = 1 # rounds
+    users = {} # list of users
+    users_count = 1 # count of users
+    joined = 0 # if user is joined
+    question = "" # game question
+    admin_uid = "100005766793253" # admin uid
+
+    # game options default
+    game_math = 0 
     game_tt = 0
-    game_all = 0
+    game_all = 1
     game_opm = 0
     game_bugtong = 0
 
+    # misc
+    game_tt_check = 0
+
+    # next_game manager
+    next_game = -1
+    next_game_name = ""
+
+    def set_defaults(self):
+        self.answer = "" # game answer
+        self.rounds = 1 # rounds
+        self.question = "" # game question
+
+
+    def post_msg(self, msg):
+        client.send(Message(text=f"{msg}"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
 
     def join_user(self, id, name):
         self.users[self.users_count] = [id, name, 0]
@@ -140,7 +162,35 @@ class GameBot(Client):
         self.question = f"{shuff}"
         self.repeat()
 
+    def next_gamemode(self, game):
+        if self.next_game > 0:
+            self.next_game -= 1
+        if self.next_game == 0:
+            self.post_msg(f"Game changing to {game}")
+            self.next_game = -1
+            self.game_changer(game)
+
+    def max_rounds(self):
+        if self.rounds > 5:
+            self.post_msg("Congratulations!")
+            high_score = 0
+            for x in self.users:
+                if self.users[x][2] > high_score:
+                    high_score = self.users[x][2]
+                    high_name = self.users[x][1]
+            self.post_msg(f"{high_name} = {high_score}")
+            self.post_msg("Restarting game...")
+            sleep(3)
+            for x in self.users:
+                self.users[x][2] = 0
+            self.set_defaults()
+            self.game_changer("all")
+
+
     def game_manager(self):
+        self.next_gamemode(self.next_game_name)
+        self.max_rounds()
+        # main
         if self.game_math == 1:
             m_pick = random.randint(1, 2)
             if m_pick == 1:
@@ -156,20 +206,22 @@ class GameBot(Client):
         if self.game_all == 1:
             a_pick = random.randint(1, 4)
             if a_pick == 1:
+                self.game_tt_check = 0
                 m_pick = random.randint(1, 2)
                 if m_pick == 1:
                     return self.math_add()
                 if m_pick ==2:
                     return self.math_difference()
             if a_pick == 2:
+                self.game_tt_check = 1
                 return self.text_twist()
             if a_pick == 3:
+                self.game_tt_check = 0
                 return self.opm()
             if a_pick == 4:
+                self.game_tt_check = 0
                 return self.bugtong()
-        else:
-            client.send(Message(text=f"Pick a game\n!math\n!texttwist\n!opm\n!bugtong\n!all"),
-                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+            
 
     def bugtong(self):
         with open('bugtong.txt', encoding="utf8") as f:
@@ -181,8 +233,7 @@ class GameBot(Client):
         bugtong = bugtong.split('#')
         self.question = bugtong[0]
         self.answer = bugtong[1].rstrip()
-        print(self.answer)
-        client.send(Message(text=f"ROUND {self.round}\nBUGTONG"),
+        client.send(Message(text=f"ROUND {self.rounds}\nBUGTONG"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -196,7 +247,7 @@ class GameBot(Client):
         opm = opm.split(',')
         self.question = f"{opm[1]}"
         self.answer = opm[2].rstrip()
-        client.send(Message(text=f"ROUND {self.round}\nGUESS OPM ARTIST"),
+        client.send(Message(text=f"ROUND {self.rounds}\nGUESS OPM ARTIST"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -230,7 +281,7 @@ class GameBot(Client):
         shuff = "".join(shuff)
         self.question = f"{shuff}"
         self.answer = word.rstrip()
-        client.send(Message(text=f"ROUND {self.round}\nTEXT TWIST"),
+        client.send(Message(text=f"ROUND {self.rounds}\nTEXT TWIST"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -239,7 +290,7 @@ class GameBot(Client):
         b = rand_b()
         self.answer = f"{a+b}"
         self.question = f"{a} + {b} = ?"
-        client.send(Message(text=f"ROUND {self.round}\nMATH"),
+        client.send(Message(text=f"ROUND {self.rounds}\nMATH"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -248,18 +299,44 @@ class GameBot(Client):
         b = rand_b()
         self.answer = f"{a-b}"
         self.question = f"{a} - {b} = ?"
-        client.send(Message(text=f"ROUND {self.round}\nMATH"),
+        client.send(Message(text=f"ROUND {self.rounds}\nMATH"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
     def repeat(self):
         client.send(Message(text=self.question), thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        cls()
+        print(self.answer)
 
     def onQprimer(self, **kwargs):
         client.changeNickname("GameMaster", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         client.send(Message(text="Gamebot ON!"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.game_manager()
+    
+    def game_reset(self):
+        self.game_all = 1
+        self.game_tt = 0
+        self.game_math = 0
+        self.game_opm = 0
+        self.game_bugtong = 0
+    
+    def game_changer(self, game):
+        self.game_reset()
+        if game == "bugtong":
+            self.game_bugtong = 1
+        if game == "opm":
+            self.game_opm = 1
+        if game == "math":
+            self.game_math = 1
+        if game == "tt":
+            self.game_tt = 1
+    
+    def next_game_name_changer(self, name):
+        self.next_game = 4
+        self.next_game_name = name
+        self.post_msg(f"Game mode will change to {name} after 3 questions")
+
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
         command = message_object.text.lower()
@@ -274,78 +351,37 @@ class GameBot(Client):
                                   thread_id=thread_id, thread_type=thread_type)
                         self.changeNickname("", client.uid, thread_id=thread_id, thread_type=ThreadType.GROUP)
                         start_bot()
+                if "!about" in command:
+                    self.post_msg("PyBatibot gamebot for facebook")
+                    self.post_msg("Created by: Jamuel Galicia")
                 if "!bugtong" in command:
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
-                    self.send(Message(text="Bugtong Bugtong selected"),
-                                thread_id=thread_id, thread_type=thread_type)
-                    self.game_all = 0
-                    self.game_tt = 0
-                    self.game_math = 0
-                    self.game_opm = 0
-                    self.game_bugtong = 1
-                    self.game_manager()
-                if "!answer" in command:
-                    try:
-                        self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                        self.send(Message(text=self.answer),
-                                    thread_id=thread_id, thread_type=thread_type)
-                    except fbchat.models.FBchatFacebookError:
-                        self.reactToMessage(
-                                message_object.uid, MessageReaction.NO)
+                    self.next_game_name_changer("bugtong")
                 if "!opm" in command:
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
-                    self.send(Message(text="OPM selected"),
-                                thread_id=thread_id, thread_type=thread_type)
-                    self.game_all = 0
-                    self.game_tt = 0
-                    self.game_math = 0
-                    self.game_bugtong = 0
-                    self.game_opm = 1
-                    self.game_manager()
+                    self.next_game_name_changer("opm")
                 if "!math" in command:
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
-                    self.send(Message(text="Math selected"),
-                                thread_id=thread_id, thread_type=thread_type)
-                    self.game_all = 0
-                    self.game_tt = 0
-                    self.game_math = 1
-                    self.game_opm = 0
-                    self.game_bugtong = 0
-                    self.game_manager()
+                    self.next_game_name_changer("math")
                 if "!texttwist" in command:
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
-                    self.send(Message(text="TextTwist selected"),
-                                thread_id=thread_id, thread_type=thread_type)
-                    self.game_all = 0
-                    self.game_tt = 1
-                    self.game_math = 0
-                    self.game_opm = 0
-                    self.game_bugtong = 0
-                    self.game_manager()
+                    self.next_game_name_changer("tt")
                 if "!all" in command:
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
-                    self.send(Message(text="All games selected"),
-                                thread_id=thread_id, thread_type=thread_type)
-                    self.game_all = 1
-                    self.game_tt = 0
-                    self.game_math = 0
-                    self.game_opm = 0
-                    self.game_bugtong = 0
-                    self.game_manager()
+                    self.next_game_name_changer("all")
                 if "!clue" in command:
-                    if self.game_tt == 1:
+                    if self.game_tt_check == 1:
                         self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
                         self.send(Message(text=define(self.answer)),
                                   thread_id=thread_id, thread_type=thread_type)
                 if "!shuffle" in command:
-                    if self.game_tt == 1:
+                    if self.game_tt_check == 1:
                         try:
                             self.shuffle()
                             self.reactToMessage(
@@ -357,6 +393,9 @@ class GameBot(Client):
                 if "!pass" in command:
                     self.reactToMessage(message_object.uid,
                                         MessageReaction.YES)
+                    self.send(Message(text=f"the correct answer is:\n{self.answer}"),
+                                    thread_id=thread_id, thread_type=thread_type)
+                    sleep(3)
                     self.game_manager()
                 if "!repeat" in command:
                     self.reactToMessage(message_object.uid,
@@ -385,11 +424,14 @@ class GameBot(Client):
                             message_object.uid, MessageReaction.NO)
                         print("Index error")
                 if "!score" in command:
+                    self.reactToMessage(message_object.uid, MessageReaction.YES)
+                    scores = ""
                     for x in self.users:
-                        self.reactToMessage(
-                            message_object.uid, MessageReaction.YES)
-                        self.send(Message(text=f"{self.users[x][1]} = {self.users[x][2]}"),
-                                  thread_id=thread_id, thread_type=thread_type)
+                        scores += self.users[x][1]
+                        scores += " = "
+                        scores += str(self.users[x][2])
+                        scores += "\n"
+                    self.post_msg(scores)
                 if "!help" in command:
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
@@ -399,9 +441,12 @@ class GameBot(Client):
                                                    "!shuffle - texttwist shuffle word\n\n"
                                                    "!score - show scores\n\n"
                                                    "!repeat - repeat question\n\n"
-                                                   "!shuffle - shuffle word letters\n\n"),
+                                                   "!shuffle - shuffle word letters\n\n"
+                                                   "!pass - next question"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
+                    self.send(Message(text=f"Pick a game\n!math\n!texttwist\n!opm\n!bugtong\n!all"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
                     
                 if self.answer in command:
                     self.joined = 0
@@ -412,10 +457,10 @@ class GameBot(Client):
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.LOVE)
                             self.users[x][2] += 1
-                            self.send(Message(text="You got it!"),
+                            self.send(Message(text=f"{self.users[x][1]} got the correct answer!\n{self.users[x][1]} = {self.users[x][2]}"),
                                       thread_id=thread_id, thread_type=thread_type)
                             self.joined = 1
-                            self.round += 1
+                            self.rounds += 1
                             self.game_manager()
                     if self.joined == 0:
                         self.reactToMessage(
@@ -661,9 +706,9 @@ class FacebookBot(Client):
                         if "!about" in command:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Python bot"),
+                            self.send(Message(text="PyBatibot virtual assistant for facebook"),
                                       thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="Created by: Jam"),
+                            self.send(Message(text="Created by: Jamuel Galicia"),
                                       thread_id=thread_id, thread_type=thread_type)
                         # pause bot
                         if "!pause" in command:
@@ -836,6 +881,7 @@ class FacebookBot(Client):
                             if author_id == self.admin_uid:
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.YES)
+                                GameBot.users = {}
                                 GameBot.thread_id = thread_id
                                 game_bot.listen()
 
@@ -929,11 +975,13 @@ def start_bot():
 
 
 def main():
+    cls()
     global client
     global session_cookies
     client = Client("pybotjamgph", "jamuel26")
     session_cookies = client.getSession()
     start_bot()
+    
 
 
 main()
