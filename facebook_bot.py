@@ -171,7 +171,7 @@ class GameBot(Client):
             self.game_changer(game)
 
     def max_rounds(self):
-        if self.rounds > 5:
+        if self.rounds > 50:
             self.post_msg("Congratulations!")
             high_score = 0
             for x in self.users:
