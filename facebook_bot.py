@@ -112,6 +112,71 @@ def rand_b():
     b = random.randint(0, 9999)
     return b
 
+class BadBot(Client):
+
+    thread_id = ""
+
+    def post_msg(self, msg):
+        client.send(Message(text=f"{msg}"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+    
+    def badbot_get(self, msg):
+        my_cursor.execute(f"SELECT * FROM badbot WHERE question LIKE '%{msg}%'")
+        my_result = my_cursor.fetchall()
+        return my_result
+
+    def badbot_add(self, question, msg):
+        sql = f"INSERT INTO badbot (question, answer) VALUES ('{question}', '{msg}')"
+        my_cursor.execute(sql)
+        my_db.commit()
+
+
+    def onQprimer(self, **kwargs):
+        client.changeNickname("BadBot", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message(text="!add question#answer - add intelligence"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+
+
+    def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
+        if author_id != self.uid:
+            msg = message_object.text
+            com = msg.lower()
+            question = list(self.badbot_get(msg))
+
+            ans = []
+            count = 0
+            for x in question:
+                ans.append(x[2])
+                count += 1
+
+            if ans != []:
+                ran = random.randint(0, count - 1)
+                self.post_msg(ans[ran])
+            
+            if "!add" in com:
+                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                com = com.split()
+                com = " ".join(com[1:])
+                com = com.split('#')
+                self.post_msg(f"salamat sa pagtudlo bai")
+                self.badbot_add(com[0], com[1])
+
+            if "!help" in com:
+                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                self.post_msg("!add question#answer")
+
+            if "!badbot off" in com:
+                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                self.post_msg("BadBot OFF")
+                start_bot()
+
+
+
+
+
+
+
+
 
 class GameBot(Client):
     # main variables
@@ -884,6 +949,11 @@ class FacebookBot(Client):
                                 GameBot.users = {}
                                 GameBot.thread_id = thread_id
                                 game_bot.listen()
+                        if "!badbot on" in command:
+                            self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                            BadBot.thread_id = thread_id
+                            bad_bot.listen()
 
                         # SQL Cheat sheet
                         if "!mysql cheat-sheet" in command:
@@ -967,10 +1037,14 @@ class FacebookBot(Client):
 def start_bot():
     global fb_bot
     global game_bot
+    global bad_bot
     fb_bot = FacebookBot("pybotjamgph", "jamuel26",
                          session_cookies=session_cookies)
     game_bot = GameBot("pybotjamgph", "jamuel26",
                        session_cookies=session_cookies)
+    bad_bot = BadBot("pybotjamgph", "jamuel26",
+                       session_cookies=session_cookies)
+    
     fb_bot.listen()
 
 
