@@ -121,7 +121,7 @@ class BadBot(Client):
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
     
     def badbot_get(self, msg):
-        my_cursor.execute(f"SELECT * FROM badbot WHERE question LIKE '%{msg}%'")
+        my_cursor.execute(f"SELECT * FROM badbot WHERE question = '{msg}'")
         my_result = my_cursor.fetchall()
         return my_result
 
@@ -168,6 +168,7 @@ class BadBot(Client):
             if "!badbot off" in com:
                 self.reactToMessage(message_object.uid, MessageReaction.YES)
                 self.post_msg("BadBot OFF")
+                client.changeNickname("", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
                 start_bot()
 
 
