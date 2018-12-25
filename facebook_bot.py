@@ -115,6 +115,7 @@ def rand_b():
 class BadBot(Client):
 
     thread_id = ""
+    admin_uid = "100005766793253" # admin uid
 
     def post_msg(self, msg):
         client.send(Message(text=f"{msg}"),
@@ -138,6 +139,7 @@ class BadBot(Client):
 
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
+        self.thread_id = thread_id
         if author_id != self.uid:
             msg = message_object.text
             com = msg.lower()
@@ -154,22 +156,40 @@ class BadBot(Client):
                 self.post_msg(ans[ran])
             
             if "!add" in com:
-                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                com = com.split()
-                com = " ".join(com[1:])
-                com = com.split('#')
-                self.post_msg(f"salamat sa pagtudlo bai")
-                self.badbot_add(com[0], com[1])
+                try:
+                    com = com.split()
+                    com = " ".join(com[1:])
+                    com = com.split('#')
+                    q = com[0]
+                    a = com[1]
+                except IndexError:
+                    self.reactToMessage(message_object.uid, MessageReaction.NO)
+                if not q:
+                    self.reactToMessage(message_object.uid, MessageReaction.NO)
+                elif not a:
+                    self.reactToMessage(message_object.uid, MessageReaction.NO)
+                else:
+                    self.reactToMessage(message_object.uid, MessageReaction.YES)
+                    self.post_msg(f"salamat sa pagtudlo bai")
+                    self.badbot_add(q, a)
 
             if "!help" in com:
                 self.reactToMessage(message_object.uid, MessageReaction.YES)
                 self.post_msg("!add question#answer")
+            
+            if "!about" in com:
+                self.post_msg("PyBatibot: bad mode on")
+                sleep(1)
+                self.post_msg("Created by: Jamuel Galicia")
 
-            if "!badbot off" in com:
-                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                self.post_msg("BadBot OFF")
-                client.changeNickname("", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
-                start_bot()
+            if "!bad off" in com:
+                if author_id == self.admin_uid:
+                    self.reactToMessage(message_object.uid, MessageReaction.YES)
+                    self.post_msg("BadBot OFF")
+                    client.changeNickname("", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+                    start_bot()
+                else:
+                    self.reactToMessage(message_object.uid, MessageReaction.NO)
 
 
 
@@ -950,7 +970,7 @@ class FacebookBot(Client):
                                 GameBot.users = {}
                                 GameBot.thread_id = thread_id
                                 game_bot.listen()
-                        if "!badbot on" in command:
+                        if "!bad on" in command:
                             self.reactToMessage(
                                     message_object.uid, MessageReaction.YES)
                             BadBot.thread_id = thread_id
