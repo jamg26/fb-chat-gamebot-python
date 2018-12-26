@@ -115,11 +115,18 @@ def rand_b():
 class BadBot(Client):
 
     thread_id = ""
+    thread_type = ""
     admin_uid = "100005766793253" # admin uid
+    
+
+    def onFriendRequest(self, from_id, msg):
+        self.friendConnect(from_id)
+        self.sendMessage("Hello! you added me", from_id, thread_type=ThreadType.USER)
+
 
     def post_msg(self, msg):
         client.send(Message(text=f"{msg}"),
-                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+                    thread_id=self.thread_id, thread_type=self.thread_type)
     
     def badbot_get(self, msg):
         my_cursor.execute(f"SELECT * FROM badbot WHERE question = '{msg}'")
@@ -134,12 +141,13 @@ class BadBot(Client):
 
     def onQprimer(self, **kwargs):
         client.changeNickname("BadBot", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
-        client.send(Message(text="!add question#answer - add intelligence"),
+        client.send(Message(text="!add tanong mo#sagot ko"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
 
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
         self.thread_id = thread_id
+        self.thread_type = thread_type
         if author_id != self.uid:
             msg = message_object.text
             com = msg.lower()
@@ -170,7 +178,7 @@ class BadBot(Client):
                     self.reactToMessage(message_object.uid, MessageReaction.NO)
                 else:
                     self.reactToMessage(message_object.uid, MessageReaction.YES)
-                    self.post_msg(f"salamat sa pagtudlo bai")
+                    self.post_msg(f"salamat sa pagturo!")
                     self.badbot_add(q, a)
 
             if "!help" in com:
@@ -190,12 +198,6 @@ class BadBot(Client):
                     start_bot()
                 else:
                     self.reactToMessage(message_object.uid, MessageReaction.NO)
-
-
-
-
-
-
 
 
 
