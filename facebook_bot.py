@@ -235,6 +235,7 @@ class GameBot(Client):
     # next_game manager
     next_game = -1
     next_game_name = ""
+    max_game_rounds = 50
 
     def set_defaults(self):
         self.answer = "" # game answer
@@ -269,7 +270,7 @@ class GameBot(Client):
             self.game_changer(game)
 
     def max_rounds(self):
-        if self.rounds > 50:
+        if self.rounds > self.max_game_rounds:
             self.post_msg("Congratulations!")
             high_score = 0
             for x in self.users:
@@ -290,18 +291,25 @@ class GameBot(Client):
         self.max_rounds()
         # main
         if self.game_math == 1:
+            self.game_tt_check = 0
             m_pick = random.randint(1, 2)
             if m_pick == 1:
                 return self.math_add()
             if m_pick == 2:
                 return self.math_difference()
+
         if self.game_tt == 1:
             self.game_tt_check = 1
             return self.text_twist()
+
         if self.game_opm == 1:
+            self.game_tt_check = 0
             return self.opm()
+
         if self.game_bugtong == 1:
+            self.game_tt_check = 0
             return self.bugtong()
+
         if self.game_all == 1:
             a_pick = random.randint(1, 4)
             if a_pick == 1:
@@ -432,7 +440,7 @@ class GameBot(Client):
             self.game_tt = 1
     
     def next_game_name_changer(self, name):
-        self.next_game = 4
+        self.next_game = 3
         self.next_game_name = name
         self.post_msg(f"Game mode will change to {name} after 3 questions")
 
@@ -450,6 +458,18 @@ class GameBot(Client):
                                   thread_id=thread_id, thread_type=thread_type)
                         self.changeNickname("", client.uid, thread_id=thread_id, thread_type=ThreadType.GROUP)
                         start_bot()
+                if "!rounds" in command:
+                    rounds = command.split()
+                    try:
+                        r = int(rounds[1])
+                        self.reactToMessage(
+                            message_object.uid, MessageReaction.YES)
+                        self.max_game_rounds = r
+                        self.post_msg(f"Max round changed to {r}")
+                    except ValueError:
+                        self.reactToMessage(
+                            message_object.uid, MessageReaction.NO)
+
                 if "!about" in command:
                     self.post_msg("PyBatibot gamebot for facebook")
                     self.post_msg("Created by: Jamuel Galicia")
@@ -502,16 +522,17 @@ class GameBot(Client):
                     self.repeat()
                 if "!join" in command:
                     join = 0
+                    u_join = self.fetchUserInfo(author_id)[author_id]
                     try:
-                        name = command.split()
+                        name = u_join.first_name
                         for x in self.users:
                             if author_id in self.users[x][0]:
                                 join = 1
                         if join == 0:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
-                            self.join_user(author_id, name[1])
-                            self.send(Message(text=f"{name[1]} joined."),
+                            self.join_user(author_id, name)
+                            self.send(Message(text=f"{name} joined."),
                                       thread_id=thread_id, thread_type=thread_type)
                         else:
                             self.reactToMessage(
@@ -535,13 +556,14 @@ class GameBot(Client):
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
                     self.send(Message(text="COMMAND LIST:\n\n"
-                                                   "!join (name) - join game\n\n"
+                                                   "!join - join game\n\n"
                                                    "!clue - texttwist word definition\n\n"
                                                    "!shuffle - texttwist shuffle word\n\n"
                                                    "!score - show scores\n\n"
                                                    "!repeat - repeat question\n\n"
                                                    "!shuffle - shuffle word letters\n\n"
-                                                   "!pass - next question"),
+                                                   "!pass - next question\n\n"
+                                                   "!rounds - set max rounds"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
                     self.send(Message(text=f"Pick a game\n!math\n!texttwist\n!opm\n!bugtong\n!all"),
