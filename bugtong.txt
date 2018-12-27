@@ -1,4 +1,4 @@
-heto na ang magkapatid, nag-uunahang pumanhik.#paa
+﻿heto na ang magkapatid, nag-uunahang pumanhik.#paa
 dalawang batong itim, malayo ang nararating.#mata
 kay lapit-lapit na sa mata, di mo pa rin makita.#tenga
 dalawang punsu-punsuhan, ang laman ay kaligtasan.#suso
@@ -9,7 +9,7 @@ nakayuko ang reyna di nalalaglag ang korona.#bayabas
 isang prinsesa nakaupo sa tasa.#kasoy
 ate mo, ate ko, ate ng lahat ng tao.#atis
 isang tabo, laman ay pako.#suha
-kung tawagin nilay â€œsantoâ€ hindi naman milagroso.#santol
+kung tawagin nilay santo hindi naman milagroso.#santol
 bulaklak muna ang dapat gawin, bago mo ito kanin.#saging
 nakatalikod na ang prinsesa, ang mukhay nakaharap pa.#balimbing
 tatlong bundok ang tinibag, bago narating ang dagat.#niyog

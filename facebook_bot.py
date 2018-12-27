@@ -125,8 +125,12 @@ class BadBot(Client):
 
 
     def post_msg(self, msg):
-        client.send(Message(text=f"{msg}"),
-                    thread_id=self.thread_id, thread_type=self.thread_type)
+        client.setTypingStatus(TypingStatus.TYPING, thread_id=self.thread_id, thread_type=self.thread_type)
+        sleep(1)
+        client.send(Message(text=f"{msg}"), thread_id=self.thread_id, thread_type=self.thread_type)
+    
+    def post_msg_b(self, msg):
+        client.send(Message(text=f"{msg}"), thread_id=self.thread_id, thread_type=self.thread_type)
     
     def badbot_get(self, msg):
         my_cursor.execute(f"SELECT * FROM badbot WHERE question = '{msg}'")
@@ -141,8 +145,6 @@ class BadBot(Client):
 
     def onQprimer(self, **kwargs):
         client.changeNickname("BadBot", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
-        client.send(Message(text="!add tanong mo#sagot ko"),
-                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
 
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
@@ -160,9 +162,17 @@ class BadBot(Client):
                 count += 1
 
             if ans != []:
+                cls()
+                u_sender = self.fetchUserInfo(author_id)[author_id]
                 ran = random.randint(0, count - 1)
-                self.post_msg(ans[ran])
-            
+                ans_send = ans[ran]
+                if "{user}" in ans_send:
+                    bot_post = ans_send.replace("{user}", u_sender.first_name)
+                    self.post_msg(bot_post)
+                else:
+                    self.post_msg(ans_send)
+
+
             if "!add" in com:
                 try:
                     com = com.split()
@@ -178,22 +188,22 @@ class BadBot(Client):
                     self.reactToMessage(message_object.uid, MessageReaction.NO)
                 else:
                     self.reactToMessage(message_object.uid, MessageReaction.YES)
-                    self.post_msg(f"salamat sa pagturo!")
+                    self.post_msg_b(f"salamat sa pagturo!")
                     self.badbot_add(q, a)
 
             if "!help" in com:
                 self.reactToMessage(message_object.uid, MessageReaction.YES)
-                self.post_msg("!add question#answer")
+                self.post_msg_b("COMMAND:\n\n!add hi#hello {user} im bot")
             
             if "!about" in com:
-                self.post_msg("PyBatibot: bad mode on")
+                self.post_msg_b("PyBatibot: bad mode on")
                 sleep(1)
-                self.post_msg("Created by: Jamuel Galicia")
+                self.post_msg_b("Created by: Jamuel Galicia")
 
             if "!bad off" in com:
                 if author_id == self.admin_uid:
                     self.reactToMessage(message_object.uid, MessageReaction.YES)
-                    self.post_msg("BadBot OFF")
+                    self.post_msg_b("BadBot OFF")
                     client.changeNickname("", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
                     start_bot()
                 else:
@@ -286,6 +296,7 @@ class GameBot(Client):
             if m_pick == 2:
                 return self.math_difference()
         if self.game_tt == 1:
+            self.game_tt_check = 1
             return self.text_twist()
         if self.game_opm == 1:
             return self.opm()
@@ -1061,11 +1072,11 @@ def start_bot():
     global fb_bot
     global game_bot
     global bad_bot
-    fb_bot = FacebookBot("pybotjamgph", "jamuel26",
+    fb_bot = FacebookBot("", "",
                          session_cookies=session_cookies)
-    game_bot = GameBot("pybotjamgph", "jamuel26",
+    game_bot = GameBot("", "",
                        session_cookies=session_cookies)
-    bad_bot = BadBot("pybotjamgph", "jamuel26",
+    bad_bot = BadBot("", "",
                        session_cookies=session_cookies)
     
     fb_bot.listen()
