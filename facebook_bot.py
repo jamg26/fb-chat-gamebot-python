@@ -33,18 +33,18 @@ def sms(num, msg):
 
 
 def mysql_update(ind, msgs):
-    sql = f"UPDATE crud SET message = '{msgs}'WHERE ID={ind}"
+    sql = f"UPDATE crud SET message = '{msgs}' WHERE message = '{ind}'"
     my_cursor.execute(sql)
     my_db.commit()
 
 
-def mysql_delete(ind):
-    if ind == "all":
+def mysql_delete(msg):
+    if msg == "all":
         sql = "DELETE FROM crud WHERE id != 0"
         my_cursor.execute(sql)
         my_db.commit()
     else:
-        sql = f"DELETE FROM crud WHERE id = {ind}"
+        sql = f"DELETE FROM crud WHERE message = '{msg}'"
         my_cursor.execute(sql)
         my_db.commit()
 
@@ -58,7 +58,10 @@ def mysql_add(message):
 def mysql_get():
     my_cursor.execute("SELECT * FROM crud ORDER BY ID ASC")
     my_result = my_cursor.fetchall()
-    res = "\n".join(map(str, my_result[0:]))
+    res = []
+    for x in my_result:
+        res.append(x[1])
+    res = "\n".join(res)
     return res
 
 
@@ -91,25 +94,26 @@ def define(word):
     language = 'en'
     url = f'https://od-api.oxforddictionaries.com:443/api/v1/entries/{language}/{word.lower()}'
     r = requests.get(url, headers={'app_id': app_id, 'app_key': app_key})
+    
     if r.status_code == 404:
-        return "Not found"
+        return "no data"
     else:
         da = r.json()
         try:
             res = da['results'][0]["lexicalEntries"][0]['entries'][0]['senses'][0]['definitions']
             return "".join(res)
         except KeyError:
-            res = da['results'][0]["lexicalEntries"][0]['entries'][0]['senses'][0]['crossReferenceMarkers']
-            return "".join(res)
+            return "no data"
+            
 
 
 def rand_a():
-    a = random.randint(0, 9999)
+    a = random.randint(0, 999)
     return a
 
 
 def rand_b():
-    b = random.randint(0, 9999)
+    b = random.randint(0, 999)
     return b
 
 class BadBot(Client):
@@ -250,6 +254,7 @@ class GameBot(Client):
     def join_user(self, id, name):
         self.users[self.users_count] = [id, name, 0]
         self.users_count += 1
+        
 
     def shuffle(self):
         x = [i for i in range(leng)]
@@ -368,7 +373,7 @@ class GameBot(Client):
             for x in f:
                 words.append(x)
         # generating random line in words.txt
-        ran = random.randint(0, 28699)
+        ran = random.randint(0, 2047)
         # getting a line of word
         word = words[ran]  # answer
 
@@ -411,7 +416,7 @@ class GameBot(Client):
         self.repeat()
 
     def repeat(self):
-        client.send(Message(text=self.question), thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message(text=f"ENGLISH - {self.question}"), thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         cls()
         print(self.answer)
 
@@ -586,7 +591,7 @@ class GameBot(Client):
                     if self.joined == 0:
                         self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
-                        self.send(Message(text="You need to type !join yourname"),
+                        self.send(Message(text="Type !join to participate"),
                                   thread_id=thread_id, thread_type=thread_type)
 
 
@@ -957,7 +962,7 @@ class FacebookBot(Client):
                                 Message(text=f"'{msg}' added"), thread_id=thread_id, thread_type=thread_type)
                         if "!mysql delete" in command:
                             message = command.split()
-                            self.send(Message(text=f"Executing\nDELETE FROM table_name WHERE ID = {message[2]}"),
+                            self.send(Message(text=f"Executing\nDELETE FROM table_name WHERE message = '{message[2]}'"),
                                       thread_id=thread_id, thread_type=thread_type)
                             try:
                                 mysql_delete(message[2])
@@ -975,7 +980,7 @@ class FacebookBot(Client):
                             message = command.split()
                             msg = " ".join(message[3:])
                             self.send(Message(
-                                text=f"Executing\nUPDATE table_name SET message = '{msg}' WHERE ID={message[2]}"), thread_id=thread_id, thread_type=thread_type)
+                                text=f"Executing\nUPDATE table_name SET message = '{msg}' WHERE message='{message[2]}'"), thread_id=thread_id, thread_type=thread_type)
                             try:
                                 mysql_update(message[2], msg)
                                 self.reactToMessage(
