@@ -232,6 +232,7 @@ class GameBot(Client):
     game_all = 1
     game_opm = 0
     game_bugtong = 0
+    game_title = ""
 
     # misc
     game_tt_check = 0
@@ -299,19 +300,24 @@ class GameBot(Client):
             self.game_tt_check = 0
             m_pick = random.randint(1, 2)
             if m_pick == 1:
+                self.game_title = "ADDITION\n"
                 return self.math_add()
             if m_pick == 2:
+                self.game_title = "SUBTRACTION\n"
                 return self.math_difference()
 
         if self.game_tt == 1:
             self.game_tt_check = 1
+            self.game_title = "ENGLISH\n"
             return self.text_twist()
 
         if self.game_opm == 1:
             self.game_tt_check = 0
+            self.game_title = "GUESS THE ARTIST\n"
             return self.opm()
 
         if self.game_bugtong == 1:
+            self.game_title = "BUGTONG\n"
             self.game_tt_check = 0
             return self.bugtong()
 
@@ -321,17 +327,22 @@ class GameBot(Client):
                 self.game_tt_check = 0
                 m_pick = random.randint(1, 2)
                 if m_pick == 1:
+                    self.game_title = "ADDITION\n"
                     return self.math_add()
                 if m_pick ==2:
+                    self.game_title = "SUBTRACTION\n"
                     return self.math_difference()
             if a_pick == 2:
+                self.game_title = "ENGLISH\n"
                 self.game_tt_check = 1
                 return self.text_twist()
             if a_pick == 3:
+                self.game_title = "GUESS THE ARTIST\n"
                 self.game_tt_check = 0
                 return self.opm()
             if a_pick == 4:
                 self.game_tt_check = 0
+                self.game_title = "BUGTONG\n"
                 return self.bugtong()
             
 
@@ -345,7 +356,7 @@ class GameBot(Client):
         bugtong = bugtong.split('#')
         self.question = bugtong[0]
         self.answer = bugtong[1].rstrip()
-        client.send(Message(text=f"ROUND {self.rounds}\nBUGTONG"),
+        client.send(Message(text=f"ROUND {self.rounds}"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -359,7 +370,7 @@ class GameBot(Client):
         opm = opm.split(',')
         self.question = f"{opm[1]}"
         self.answer = opm[2].rstrip()
-        client.send(Message(text=f"ROUND {self.rounds}\nGUESS OPM ARTIST"),
+        client.send(Message(text=f"ROUND {self.rounds}"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -393,7 +404,7 @@ class GameBot(Client):
         shuff = "".join(shuff)
         self.question = f"{shuff}"
         self.answer = word.rstrip()
-        client.send(Message(text=f"ROUND {self.rounds}\nTEXT TWIST"),
+        client.send(Message(text=f"ROUND {self.rounds}"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -402,7 +413,7 @@ class GameBot(Client):
         b = rand_b()
         self.answer = f"{a+b}"
         self.question = f"{a} + {b} = ?"
-        client.send(Message(text=f"ROUND {self.rounds}\nMATH"),
+        client.send(Message(text=f"ROUND {self.rounds}"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
@@ -411,12 +422,12 @@ class GameBot(Client):
         b = rand_b()
         self.answer = f"{a-b}"
         self.question = f"{a} - {b} = ?"
-        client.send(Message(text=f"ROUND {self.rounds}\nMATH"),
+        client.send(Message(text=f"ROUND {self.rounds}"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
 
     def repeat(self):
-        client.send(Message(text=f"ENGLISH - {self.question}"), thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        client.send(Message(text=f"{self.game_title}{self.question}"), thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         cls()
         print(self.answer)
 
