@@ -25,6 +25,12 @@ def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
+def meme(t_id, text0, text1):
+    r = requests.post("https://api.imgflip.com/caption_image", data={'template_id': t_id,'username': 'jamg', 'password': 'jamuel26', 'text0': text0, 'text1': text1})
+    r = r.json()
+    return r["data"]["url"]
+
+
 def sms(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
     params = {'1': num, '2': f'{msg}\n\n\n\n\n\njamgph.com',
@@ -646,15 +652,33 @@ class FacebookBot(Client):
                 if author_id != self.uid:
                     if file_type == "%text":  # if filetype is text
                         # provide random quotes
-                        if "!quote" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            # response = requests.get(
-                            #     "https://talaikis.com/api/quotes/random/")
-                            # data = response.json()
-                            self.send(
-                                Message(text="not available"), thread_id=thread_id, thread_type=thread_type)
-                        # bot mirroring
+                        if "!meme help" in command:
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            self.send(Message(text=f"type\n!meme id#text1#text2\n!meme id - list of all id"),
+                                    thread_id=thread_id, thread_type=thread_type)
+                        if "!meme id" in command:
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            r = requests.get("https://api.imgflip.com/get_memes")
+                            tips = []
+                            res = r.json()
+                            for x in res["data"]["memes"]:
+                                tips.append(f"{x['id']} - {x['url']}")
+                            tips = "\n".join(tips)
+                            self.send(Message(text=tips),
+                                    thread_id=thread_id, thread_type=thread_type)
+                        if "!meme" in command:
+                            try:
+                                data = command.split('#')
+                                text0 = data[1]
+                                text1 = data[2]
+                                data = data[0].split()
+                                t_id = data[1]
+                                img = meme(t_id, text0, text1)
+                                self.sendRemoteImage(img, message=Message(text=''), thread_id=thread_id,
+                                                    thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except IndexError:
+                                print("Index Error in !meme")
                         if "!mirror on" in command:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
@@ -1054,7 +1078,6 @@ class FacebookBot(Client):
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
                             self.send(Message(text="COMMAND LIST:\n\n"
-                                                   "!quotes - random quotes\n\n"
                                                    "!random image - random image\n\n"
                                                    "!mirror on/off - mirror bot\n\n"
                                                    "!define {word} - define a word\n\n"
@@ -1081,6 +1104,9 @@ class FacebookBot(Client):
                                                    "!mysql delete {id}\n\n"
                                                    "!mysql update {id} {message}\n\n"
                                                    "!sms {number} {message}\n\n"
+                                                   "!meme id#text1#text2"
+                                                   "!meme id - show all id"
+                                                   "!meme help"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
