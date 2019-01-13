@@ -1071,7 +1071,7 @@ class FacebookBot(Client):
                                 title = get['items'][0]['snippet']['localized']['title']
                                 f_title = title.replace('"','').replace(".", "")
                                 full_url = quote(f_title)
-                                self.sendRemoteFiles(f"https://music.jamgph.com/{full_url}.m4a", message="Your music is ready", thread_id=thread_id, thread_type=thread_type)
+                                self.send(Message(text=f"Link is ready!\nhttps://music.jamgph.com/{full_url}.m4a"), thread_id=thread_id, thread_type=thread_type)
                             except IndexError:
                                 self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
