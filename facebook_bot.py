@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 import urllib.request
 import mysql.connector
 import os
+import getpass
 my_db = mysql.connector.connect(
     host="35.187.240.251",
     user="jamg",
@@ -33,8 +34,8 @@ def meme(t_id, text0, text1):
 
 def sms(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
-    params = {'1': num, '2': f'{msg}\n\n\n\n\n\njamgph.com',
-              '3': 'TR-JAMGP699769_CESFW'}
+    params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\njamgph.com',
+              '3': 'TR-JAMGP590720_ZDT9Y'}
     r = requests.post(url, data=params)
 
 
@@ -247,6 +248,11 @@ class GameBot(Client):
     next_game = -1
     next_game_name = ""
     max_game_rounds = 50
+
+    def onFriendRequest(self, from_id, msg):
+        self.friendConnect(from_id)
+        self.sendMessage("Hello! you added me",
+                         from_id, thread_type=ThreadType.USER)
 
     def set_defaults(self):
         self.answer = "" # game answer
@@ -622,7 +628,7 @@ class FacebookBot(Client):
 
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
-        self.sendMessage("Hello! you added me, dont reply im a robot ",
+        self.sendMessage("Hello! you added me",
                          from_id, thread_type=ThreadType.USER)
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
@@ -974,7 +980,7 @@ class FacebookBot(Client):
                             tip = "Executing\nSELECT * from table_name;"
                             self.send(
                                 Message(text=tip), thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="ID, MESSAGE"),
+                            self.send(Message(text="MESSAGE"),
                                       thread_id=thread_id, thread_type=thread_type)
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
@@ -1050,6 +1056,23 @@ class FacebookBot(Client):
                                     message_object.uid, MessageReaction.YES)
                             BadBot.thread_id = thread_id
                             bad_bot.listen()
+                        if "!musicdl" in command:
+                            try:
+                                self.send(Message(text="Processing your audio."), thread_id=thread_id, thread_type=thread_type)
+                                q_f = "spotdl -s"
+                                link = message_object.text.split()
+                                os.system(f"{q_f} {link[1]} -f C:/xampp/htdocs --overwrite skip")
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                self.send(Message(text="Your music is ready\nhttps://music.jamgph.com"), thread_id=thread_id, thread_type=thread_type)
+                            except IndexError:
+                                self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except KeyError:
+                                self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            
+
+                                
 
                         # SQL Cheat sheet
                         if "!mysql cheat-sheet" in command:
@@ -1104,9 +1127,10 @@ class FacebookBot(Client):
                                                    "!mysql delete {id}\n\n"
                                                    "!mysql update {id} {message}\n\n"
                                                    "!sms {number} {message}\n\n"
-                                                   "!meme id#text1#text2"
-                                                   "!meme id - show all id"
-                                                   "!meme help"
+                                                   "!meme id#text1#text2\n\n"
+                                                   "!meme id - show all id\n\n"
+                                                   "!meme help\n\n"
+                                                   "!musicdl (youtube/spotify link)\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
@@ -1150,7 +1174,9 @@ def main():
     cls()
     global client
     global session_cookies
-    client = Client("pybotjamgph", "jamuel26")
+    u_user = input('Enter username: ')
+    u_pw = getpass.getpass('Enter password: ')
+    client = Client(u_user, u_pw)
     session_cookies = client.getSession()
     start_bot()
     
