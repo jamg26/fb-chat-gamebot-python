@@ -10,6 +10,7 @@ from lyricwikia import LyricsNotFound
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
 import urllib.request
+from urllib.parse import quote
 import mysql.connector
 import os
 import getpass
@@ -1061,18 +1062,22 @@ class FacebookBot(Client):
                                 self.send(Message(text="Processing your audio."), thread_id=thread_id, thread_type=thread_type)
                                 q_f = "spotdl -s"
                                 link = message_object.text.split()
-                                os.system(f"{q_f} {link[1]} -f C:/xampp/htdocs --overwrite skip")
+                                url = link[1]
+                                os.system(f"{q_f} {url} -f C:/xampp/htdocs --overwrite skip")
                                 self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="Your music is ready\nhttps://music.jamgph.com"), thread_id=thread_id, thread_type=thread_type)
+                                y_id = url.replace("https://www.youtube.com/watch?v=", "")
+                                get = requests.get(f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={y_id}&key=REMOVED")
+                                get = get.json()
+                                title = get['items'][0]['snippet']['localized']['title']
+                                f_title = title.replace('"','').replace(".", "")
+                                full_url = quote(f_title)
+                                self.sendRemoteFiles(f"https://music.jamgph.com/{full_url}.m4a", message="Your music is ready", thread_id=thread_id, thread_type=thread_type)
                             except IndexError:
                                 self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
                             except KeyError:
                                 self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
-                            
-
-                                
 
                         # SQL Cheat sheet
                         if "!mysql cheat-sheet" in command:
