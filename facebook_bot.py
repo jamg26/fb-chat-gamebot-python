@@ -213,13 +213,13 @@ class BadBot(Client):
                 self.post_msg_b("Created by: Jamuel Galicia")
 
             if "!bad off" in com:
-                if author_id == self.admin_uid:
-                    self.reactToMessage(message_object.uid, MessageReaction.YES)
-                    self.post_msg_b("BadBot OFF")
-                    client.changeNickname("", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
-                    start_bot()
-                else:
-                    self.reactToMessage(message_object.uid, MessageReaction.NO)
+                #if author_id == self.admin_uid:
+                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                self.post_msg_b("BadBot OFF")
+                client.changeNickname("assistant", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+                start_bot()
+                # else:
+                #     self.reactToMessage(message_object.uid, MessageReaction.NO)
 
 
 
@@ -297,12 +297,14 @@ class GameBot(Client):
                     high_score = self.users[x][2]
                     high_name = self.users[x][1]
             self.post_msg(f"{high_name} = {high_score}")
-            self.post_msg("Restarting game...")
-            sleep(3)
+            self.post_msg(f"{high_name} is a genius!")
             for x in self.users:
                 self.users[x][2] = 0
             self.set_defaults()
-            self.game_changer("all")
+            #self.game_changer("all")
+            sleep(3)
+            self.changeNickname("assistant", client.uid, thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+            start_bot()
 
 
     def game_manager(self):
@@ -485,7 +487,7 @@ class GameBot(Client):
                             message_object.uid, MessageReaction.YES)
                         self.send(Message(text="Gamebot OFF!"),
                                   thread_id=thread_id, thread_type=thread_type)
-                        self.changeNickname("", client.uid, thread_id=thread_id, thread_type=ThreadType.GROUP)
+                        self.changeNickname("assistant", client.uid, thread_id=thread_id, thread_type=ThreadType.GROUP)
                         start_bot()
                 if "!rounds" in command:
                     rounds = command.split()
@@ -992,7 +994,7 @@ class FacebookBot(Client):
                                 self.send(
                                     Message(text='no data'), thread_id=thread_id, thread_type=thread_type)
                         if "!mysql add" in command:
-                            message = command.split()
+                            message = message_object.text.split()
                             msg = " ".join(message[2:])
                             tip = f"Executing\nINSERT INTO table_name (column1)\nVALUES('{msg}');"
                             self.send(
@@ -1003,7 +1005,7 @@ class FacebookBot(Client):
                             self.send(
                                 Message(text=f"'{msg}' added"), thread_id=thread_id, thread_type=thread_type)
                         if "!mysql delete" in command:
-                            message = command.split()
+                            message = message_object.text.split()
                             self.send(Message(text=f"Executing\nDELETE FROM table_name WHERE message = '{message[2]}'"),
                                       thread_id=thread_id, thread_type=thread_type)
                             try:
@@ -1019,7 +1021,7 @@ class FacebookBot(Client):
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.NO)
                         if "!mysql update" in command:
-                            message = command.split()
+                            message = message_object.text.split()
                             msg = " ".join(message[3:])
                             self.send(Message(
                                 text=f"Executing\nUPDATE table_name SET message = '{msg}' WHERE message='{message[2]}'"), thread_id=thread_id, thread_type=thread_type)
@@ -1046,12 +1048,12 @@ class FacebookBot(Client):
                             self.send(Message(text="Message sent!"),
                                       thread_id=thread_id, thread_type=thread_type)
                         if "!game on" in command:
-                            if author_id == self.admin_uid:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                GameBot.users = {}
-                                GameBot.thread_id = thread_id
-                                game_bot.listen()
+                            #if author_id == self.admin_uid:
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            GameBot.users = {}
+                            GameBot.thread_id = thread_id
+                            game_bot.listen()
                         if "!bad on" in command:
                             self.reactToMessage(
                                     message_object.uid, MessageReaction.YES)
