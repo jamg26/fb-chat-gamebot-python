@@ -9,7 +9,7 @@ import lyricwikia
 from lyricwikia import LyricsNotFound
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
-from math import sqrt
+from math import *
 import urllib.request
 from urllib.parse import quote
 import mysql.connector
