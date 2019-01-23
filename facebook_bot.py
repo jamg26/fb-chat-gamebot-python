@@ -9,6 +9,7 @@ import lyricwikia
 from lyricwikia import LyricsNotFound
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
+from math import sqrt
 import urllib.request
 from urllib.parse import quote
 import mysql.connector
@@ -104,14 +105,14 @@ def define(word):
     r = requests.get(url, headers={'app_id': app_id, 'app_key': app_key})
     
     if r.status_code == 404:
-        return "no data"
+        return "No data"
     else:
         da = r.json()
         try:
             res = da['results'][0]["lexicalEntries"][0]['entries'][0]['senses'][0]['definitions']
             return "".join(res)
         except KeyError:
-            return "no data"
+            return "No data"
             
 
 
@@ -133,7 +134,7 @@ class BadBot(Client):
 
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
-        self.sendMessage("Hello! you added me", from_id, thread_type=ThreadType.USER)
+        self.sendMessage("Hello! You added me.", from_id, thread_type=ThreadType.USER)
 
 
     def post_msg(self, msg):
@@ -252,7 +253,7 @@ class GameBot(Client):
 
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
-        self.sendMessage("Hello! you added me",
+        self.sendMessage("Hello! You added me.",
                          from_id, thread_type=ThreadType.USER)
 
     def set_defaults(self):
@@ -473,7 +474,7 @@ class GameBot(Client):
     def next_game_name_changer(self, name):
         self.next_game = 3
         self.next_game_name = name
-        self.post_msg(f"Game mode will change to {name} after 3 questions")
+        self.post_msg(f"The game mode will change to {name} after three questions.")
 
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
@@ -765,78 +766,6 @@ class FacebookBot(Client):
                             except IndexError:
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.NO)
-                        # calculation functions
-                        # addition
-                        if "!add" in command:
-                            try:
-                                addition = message_object.text.split()
-                                adding = addition[1:]
-                                results = list(map(float, adding))
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text=sum(results)), thread_id=thread_id, thread_type=thread_type)
-                            except FBchatFacebookError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                        # subtraction
-                        if "!diff" in command:
-                            try:
-                                difference = message_object.text.split()
-                                diff = float(
-                                    difference[1]) - float(difference[2])
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text=diff), thread_id=thread_id, thread_type=thread_type)
-                            except FBchatFacebookError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                        # multiplication
-                        if "!multi" in command:
-                            try:
-                                multiply = message_object.text.split()
-                                multi = float(multiply[1]) * float(multiply[2])
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text=multi), thread_id=thread_id, thread_type=thread_type)
-                            except FBchatFacebookError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                        # division
-                        if "!div" in command:
-                            try:
-                                division = message_object.text.split()
-                                div = float(division[1]) / float(division[2])
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text=div), thread_id=thread_id, thread_type=thread_type)
-                            except FBchatFacebookError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
                         if "!mod" in command:
                             try:
                                 modulo = message_object.text.split()
@@ -1080,7 +1009,64 @@ class FacebookBot(Client):
                             except KeyError:
                                 self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
-
+                        if "!bin" in command:
+                            try:
+                                b = command.split()
+                                r = int(b[1])
+                                r = bin(r)
+                                r = r.replace("0b", "")
+                                self.send(Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except ValueError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except IndexError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!hex" in command:
+                            try:
+                                b = command.split()
+                                r = int(b[1])
+                                r = hex(r)
+                                r = r.replace("0x", "")
+                                self.send(Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except ValueError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except IndexError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!oct" in command:
+                            try:
+                                b = command.split()
+                                r = int(b[1])
+                                r = oct(r)
+                                r = r.replace("0o", "")
+                                self.send(Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except ValueError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except IndexError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!sqrt" in command:
+                            try:
+                                b = command.split()
+                                r = float(b[1])
+                                r = sqrt(r)
+                                self.send(Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except ValueError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except IndexError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!math" in command:
+                            try:
+                                b = command.split()
+                                r = b[1]
+                                r = eval(r)
+                                self.send(Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except NameError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            except IndexError:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
                         # SQL Cheat sheet
                         if "!mysql cheat-sheet" in command:
                             self.reactToMessage(
@@ -1115,10 +1101,6 @@ class FacebookBot(Client):
                                                    "!title {name} - change chat title\n\n"
                                                    "!nickname {name} - change your nickname\n\n"
                                                    "!search {name} - search a user\n\n"
-                                                   "!add n1 n2 n3 nn - adding multiple numbers\n\n"
-                                                   "!diff n1 n2 - subtracting numbers\n\n"
-                                                   "!multi n1 n2 - multiplying numbers\n\n"
-                                                   "!div n1 n2 - dividing numbers\n\n"
                                                    "!mod n1 n2 - modulus division\n\n"
                                                    "!speak {words} - speak bot\n\n"
                                                    "!pause - pause bot\n\n"
@@ -1138,6 +1120,9 @@ class FacebookBot(Client):
                                                    "!meme id - show all id\n\n"
                                                    "!meme help\n\n"
                                                    "!musicdl (youtube/spotify link)\n\n"
+                                                   "!bin, !hex, !oct - convert decimal\n\n"
+                                                   "!sqrt - \n\n"
+                                                   "!math (formula)\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
