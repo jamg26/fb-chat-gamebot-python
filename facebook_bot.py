@@ -40,6 +40,18 @@ def sms(num, msg):
               '3': 'TR-JAMGP590720_ZDT9Y'}
     r = requests.post(url, data=params)
 
+def sms2(num, msg):
+    url = 'https://www.itexmo.com/php_api/api.php'
+    params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
+              '3': 'TR-JACDC373780_PFEYY'}
+    r = requests.post(url, data=params)
+
+def sms3(num, msg):
+    url = 'https://www.itexmo.com/php_api/api.php'
+    params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
+              '3': 'TR-KENTJ115195_69819'}
+    r = requests.post(url, data=params)
+
 
 def mysql_update(ind, msgs):
     sql = f"UPDATE crud SET message = '{msgs}' WHERE message = '{ind}'"
@@ -241,6 +253,7 @@ class GameBot(Client):
     game_all = 1
     game_opm = 0
     game_bugtong = 0
+    game_lyrics = 0
     game_title = ""
 
     # misc
@@ -337,8 +350,13 @@ class GameBot(Client):
             self.game_tt_check = 0
             return self.bugtong()
 
+        if self.game_lyrics == 1:
+            self.game_title = "FILL THE LYRICS\n"
+            self.game_tt_check = 0
+            return self.lyric()
+
         if self.game_all == 1:
-            a_pick = random.randint(1, 4)
+            a_pick = random.randint(1, 5)
             if a_pick == 1:
                 self.game_tt_check = 0
                 m_pick = random.randint(1, 2)
@@ -360,6 +378,10 @@ class GameBot(Client):
                 self.game_tt_check = 0
                 self.game_title = "BUGTONG\n"
                 return self.bugtong()
+            if a_pick == 5:
+                self.game_title = "FILL THE LYRICS\n"
+                self.game_tt_check = 0
+                return self.lyric()
             
 
     def bugtong(self):
@@ -372,6 +394,22 @@ class GameBot(Client):
         bugtong = bugtong.split('#')
         self.question = bugtong[0]
         self.answer = bugtong[1].rstrip()
+        client.send(Message(text=f"ROUND {self.rounds}"),
+                    thread_id=self.thread_id, thread_type=ThreadType.GROUP)
+        self.repeat()
+
+    def lyric(self):
+        with open('lyrics.txt', encoding="utf8") as f:
+            lyric = []
+            count = 0
+            for x in f:
+                count += 1
+                lyric.append(x)
+        ran = random.randint(0, count - 1)
+        lyric = lyric[ran]
+        lyric = lyric.split('#')
+        self.question = lyric[0]
+        self.answer = lyric[1].rstrip()
         client.send(Message(text=f"ROUND {self.rounds}"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
         self.repeat()
@@ -459,6 +497,7 @@ class GameBot(Client):
         self.game_math = 0
         self.game_opm = 0
         self.game_bugtong = 0
+        self.game_lyrics = 0
     
     def game_changer(self, game):
         self.game_reset()
@@ -470,6 +509,8 @@ class GameBot(Client):
             self.game_math = 1
         if game == "tt":
             self.game_tt = 1
+        if game == "lyrics":
+            self.game_lyrics = 1
     
     def next_game_name_changer(self, name):
         self.next_game = 3
@@ -521,6 +562,10 @@ class GameBot(Client):
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
                     self.next_game_name_changer("tt")
+                if "!lyrics" in command:
+                    self.reactToMessage(
+                            message_object.uid, MessageReaction.YES)
+                    self.next_game_name_changer("lyrics")
                 if "!all" in command:
                     self.reactToMessage(
                             message_object.uid, MessageReaction.YES)
@@ -598,7 +643,7 @@ class GameBot(Client):
                                                    "!rounds - set max rounds"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
-                    self.send(Message(text=f"Pick a game\n!math\n!texttwist\n!opm\n!bugtong\n!all"),
+                    self.send(Message(text=f"Pick a game\n!math\n!texttwist\n!opm\n!bugtong\n!lyrics\n!all"),
                     thread_id=self.thread_id, thread_type=ThreadType.GROUP)
                     
                 if self.answer in command:
@@ -967,15 +1012,34 @@ class FacebookBot(Client):
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.NO)
                         # sending sms
-                        if "!sms" in command:
+                        if "!sm1" in command:
                             msg = command.split()
                             message = " ".join(msg[2:])
                             number = msg[1]
                             sms(number, message)
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Message sent!"),
+                            self.send(Message(text="Message sent! from api 1"),
                                       thread_id=thread_id, thread_type=thread_type)
+                        if "!sm2" in command:
+                            msg = command.split()
+                            message = " ".join(msg[2:])
+                            number = msg[1]
+                            sms2(number, message)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="Message sent! from api 2"),
+                                      thread_id=thread_id, thread_type=thread_type)
+                        if "!sm3" in command:
+                            msg = command.split()
+                            message = " ".join(msg[2:])
+                            number = msg[1]
+                            sms3(number, message)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+                            self.send(Message(text="Message sent! from api 3"),
+                                      thread_id=thread_id, thread_type=thread_type)
+                        
                         if "!game on" in command:
                             #if author_id == self.admin_uid:
                             self.reactToMessage(
