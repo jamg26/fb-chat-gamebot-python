@@ -27,6 +27,23 @@ my_cursor = my_db.cursor()
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def vtotal(urls):
+    params = {'apikey': '9d353804f5e793903b4b5b22ab85af3f81baede416146974ed5538b59c260481', 'url':urls}
+    response = requests.post('https://www.virustotal.com/vtapi/v2/url/scan', data=params)
+    json_response = response.json()
+
+
+    headers = {
+    "Accept-Encoding": "gzip, deflate",
+    "User-Agent" : "gzip,  My Python requests library example client or username"
+    }
+    params = {'apikey': '9d353804f5e793903b4b5b22ab85af3f81baede416146974ed5538b59c260481', 'resource':urls}
+    response = requests.post('https://www.virustotal.com/vtapi/v2/url/report',
+    params=params, headers=headers)
+    json_response = response.json()
+    return f"detected {json_response['positives']} out of {json_response['total']} viruses."
+
+
 
 def meme(t_id, text0, text1):
     r = requests.post("https://api.imgflip.com/caption_image", data={'template_id': t_id,'username': 'jamg', 'password': 'jamuel26', 'text0': text0, 'text1': text1})
@@ -1153,6 +1170,23 @@ class FacebookBot(Client):
                                                    "column3 datatype,\n"
                                                    "....\n"
                                                    ");"), thread_id=thread_id, thread_type=thread_type)
+                        if "!scanurl" in command:
+                            command = command.split()
+                            try:
+                                vt = vtotal(command[1])
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(Message(text=vt), thread_id=thread_id,
+                                    thread_type=thread_type)
+                            except KeyError:
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(Message(text="Scanning url... Try again"), thread_id=thread_id,
+                                      thread_type=thread_type)
+
+                            
+                            
+
                         # show commands
                         if "!commands" in command:
                             self.reactToMessage(
@@ -1179,7 +1213,7 @@ class FacebookBot(Client):
                                                    "!mysql add {message}\n\n"
                                                    "!mysql delete {id}\n\n"
                                                    "!mysql update {id} {message}\n\n"
-                                                   "!sms {number} {message}\n\n"
+                                                   "!sm1 {number} {message}\n\n"
                                                    "!meme id#text1#text2\n\n"
                                                    "!meme id - show all id\n\n"
                                                    "!meme help\n\n"
@@ -1187,6 +1221,8 @@ class FacebookBot(Client):
                                                    "!bin, !hex, !oct - convert decimal\n\n"
                                                    "!sqrt - \n\n"
                                                    "!math (formula)\n\n"
+                                                   "!image-processing on\n\n"
+                                                   "!scanurl (url)\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
