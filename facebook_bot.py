@@ -15,6 +15,21 @@ from urllib.parse import quote
 import mysql.connector
 import os
 import getpass
+
+
+import argparse
+import io
+import re
+import sys
+
+
+# Imports the Google Cloud client library
+from google.cloud import vision
+from google.cloud.vision import types
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\jammm\\Documents\\jamgph-a2c23146675e.json"
+
+
 my_db = mysql.connector.connect(
     host="35.187.240.251",
     user="jamg",
@@ -26,6 +41,22 @@ my_cursor = my_db.cursor()
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def detect_text(path):
+    """Detects text in the file."""
+    from google.cloud import vision
+    client = vision.ImageAnnotatorClient()
+
+    with io.open(path, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.types.Image(content=content)
+
+    response = client.text_detection(image=image)
+    texts = response.text_annotations
+    return response.text_annotations[0].description
+
 
 def vtotal(urls):
     params = {'apikey': '9d353804f5e793903b4b5b22ab85af3f81baede416146974ed5538b59c260481', 'url':urls}
@@ -691,6 +722,7 @@ class FacebookBot(Client):
     admin_uid = "100005766793253"
     bot_name = "!bot start"
     game = 0
+    vision = 0
 
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
@@ -1184,9 +1216,20 @@ class FacebookBot(Client):
                                 self.send(Message(text="Scanning url... Try again"), thread_id=thread_id,
                                       thread_type=thread_type)
 
-                            
-                            
-
+                        if "!vision on" in command:
+                            if self.vision == 0:
+                                self.vision = 1
+                                self.send(Message(text="Vision Image to Text ON!"), thread_id=thread_id,
+                                        thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                        if "!vision off" in command:
+                            if self.vision == 1:
+                                self.vision = 0
+                                self.send(Message(text="Vision Image to Text OFF!"), thread_id=thread_id,
+                                        thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
                         # show commands
                         if "!commands" in command:
                             self.reactToMessage(
@@ -1242,6 +1285,11 @@ class FacebookBot(Client):
                     if file_type == "%image":
                         path = "image/" + thread_id + "_temp.jpg"
                         urllib.request.urlretrieve(url, path)
+                        if self.vision == 1:
+                            self.send(Message(text=detect_text(f"image/{thread_id}_temp.jpg")), thread_id=thread_id, thread_type=thread_type)
+                            self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                    
             else:
                 if author_id != self.uid:
                     self.markAsDelivered(thread_id, message_object.uid)
