@@ -26,6 +26,7 @@ import sys
 # Imports the Google Cloud client library
 from google.cloud import vision
 from google.cloud.vision import types
+from google.cloud import translate
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\jammm\\Documents\\jamgph-a2c23146675e.json"
 
@@ -41,6 +42,17 @@ my_cursor = my_db.cursor()
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def translation(text):
+    # Instantiates a client
+    translate_client = translate.Client()
+    # The target language
+    target = 'tl'
+    # Translates some text
+    translation = translate_client.translate(
+        text,
+        target_language=target)
+    return translation['translatedText']
 
 
 def detect_text(path):
@@ -784,33 +796,40 @@ class FacebookBot(Client):
                             except IndexError:
                                 print("Index Error in !meme")
                         if "!mirror on" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Mirror bot on!"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            self.mirror = 1
+                            if self.admin_uid == author_id:
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(Message(text="Mirror bot on!"),
+                                        thread_id=thread_id, thread_type=thread_type)
+                                self.mirror = 1
                         if "!mirror off" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Mirror bot off!"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            self.mirror = 0
+                            if self.admin_uid == author_id:
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                self.send(Message(text="Mirror bot off!"),
+                                        thread_id=thread_id, thread_type=thread_type)
+                                self.mirror = 0
                         # defining words
                         if "!define" in command:
                             defined = message_object.text.split()
                             try:
-                                d = define(defined[1])
-                                if d == "Invalid word":
+                                if defined[2]:
+                                    self.send(Message(text="You can only define 1 word"),
+                                        thread_id=thread_id, thread_type=thread_type)
+                            except IndexError:
+                                try:
+                                    d = define(defined[1])
+                                    if d == "Invalid word":
+                                        self.reactToMessage(
+                                            message_object.uid, MessageReaction.NO)
+                                    else:
+                                        self.reactToMessage(
+                                            message_object.uid, MessageReaction.YES)
+                                        self.send(
+                                            Message(text=d), thread_id=thread_id, thread_type=thread_type)
+                                except IndexError:
                                     self.reactToMessage(
                                         message_object.uid, MessageReaction.NO)
-                                else:
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.YES)
-                                    self.send(
-                                        Message(text=d), thread_id=thread_id, thread_type=thread_type)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
                         # upload random images
                         if "!random image" in command:
                             self.reactToMessage(
@@ -1090,12 +1109,12 @@ class FacebookBot(Client):
                                       thread_id=thread_id, thread_type=thread_type)
                         
                         if "!game on" in command:
-                            #if author_id == self.admin_uid:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            GameBot.users = {}
-                            GameBot.thread_id = thread_id
-                            game_bot.listen()
+                            if author_id == self.admin_uid:
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                                GameBot.users = {}
+                                GameBot.thread_id = thread_id
+                                game_bot.listen()
                         if "!bad on" in command:
                             self.reactToMessage(
                                     message_object.uid, MessageReaction.YES)
@@ -1230,6 +1249,15 @@ class FacebookBot(Client):
                                         thread_type=thread_type)
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.YES)
+                        
+                        if "!translate" in command:
+                            text = message_object.text.split()
+                            word = " ".join(text[1:])
+                            self.send(Message(text=translation(word)), thread_id=thread_id,
+                                        thread_type=thread_type)
+                            self.reactToMessage(
+                                message_object.uid, MessageReaction.YES)
+
                         # show commands
                         if "!commands" in command:
                             self.reactToMessage(
@@ -1237,35 +1265,37 @@ class FacebookBot(Client):
                             self.send(Message(text="COMMAND LIST:\n\n"
                                                    "!random image - random image\n\n"
                                                    "!mirror on/off - mirror bot\n\n"
-                                                   "!define {word} - define a word\n\n"
+                                                   "!define word - define a word\n\n"
                                                    "!lyrics artist, song - getting song lyrics\n\n"
-                                                   "!title {name} - change chat title\n\n"
-                                                   "!nickname {name} - change your nickname\n\n"
-                                                   "!search {name} - search a user\n\n"
+                                                   "!title name - change chat title\n\n"
+                                                   "!nickname name - change your nickname\n\n"
+                                                   "!search name - search a user\n\n"
                                                    "!mod n1 n2 - modulus division\n\n"
-                                                   "!speak {words} - speak bot\n\n"
+                                                   "!speak words - speak bot\n\n"
                                                    "!pause - pause bot\n\n"
                                                    "!start - start bot\n\n"
                                                    "!network 0930 - show network\n\n"
                                                    "!text-to-image\n\n"
-                                                   "!mac {mac:address}\n\n"
-                                                   "!qr {link}\n\n"
-                                                   "!forward {file link}\n\n"
+                                                   "!mac mac:address\n\n"
+                                                   "!qr link\n\n"
+                                                   "!forward file_link\n\n"
                                                    "!mysql cheat-sheet\n\n"
                                                    "!mysql show - show datas\n\n"
-                                                   "!mysql add {message}\n\n"
-                                                   "!mysql delete {id}\n\n"
-                                                   "!mysql update {id} {message}\n\n"
-                                                   "!sm1 {number} {message}\n\n"
+                                                   "!mysql add message\n\n"
+                                                   "!mysql delete id\n\n"
+                                                   "!mysql update id message\n\n"
+                                                   "!sm1 number message\n\n"
                                                    "!meme id#text1#text2\n\n"
                                                    "!meme id - show all id\n\n"
                                                    "!meme help\n\n"
-                                                   "!musicdl (youtube/spotify link)\n\n"
+                                                   "!musicdl youtube_link\n\n"
                                                    "!bin, !hex, !oct - convert decimal\n\n"
                                                    "!sqrt - \n\n"
-                                                   "!math (formula)\n\n"
-                                                   "!image-processing on\n\n"
+                                                   "!math formula\n\n"
+                                                   "!image-processing on - predicting object in image\n\n"
                                                    "!scanurl (url)\n\n"
+                                                   "!vision on - image to text\n\n"
+                                                   "!translate word\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
