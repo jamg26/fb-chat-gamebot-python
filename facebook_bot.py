@@ -65,10 +65,10 @@ def detect_text(path):
 
     image = vision.types.Image(content=content)
 
-    response = client.text_detection(image=image)
+    response = client.document_text_detection(image=image)
+
     texts = response.text_annotations
     return response.text_annotations[0].description
-
 
 def vtotal(urls):
     params = {'apikey': '9d353804f5e793903b4b5b22ab85af3f81baede416146974ed5538b59c260481', 'url':urls}
@@ -869,12 +869,7 @@ class FacebookBot(Client):
                                 user = self.searchForUsers(searching)[0]
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=f"uid: {user.uid}"), thread_id=thread_id,
-                                          thread_type=thread_type)
-                                self.send(Message(text=f"name: {user.name}"), thread_id=thread_id,
-                                          thread_type=thread_type)
-                                self.send(Message(text=f"profile: https://facebook.com/{user.uid}"),
-                                          thread_id=thread_id,
+                                self.send(Message(text=f"uid: {user.uid}\nname: {user.name}\nprofile: https://facebook.com/{user.uid}"), thread_id=thread_id,
                                           thread_type=thread_type)
                             except IndexError:
                                 self.reactToMessage(
@@ -1121,26 +1116,22 @@ class FacebookBot(Client):
                             BadBot.thread_id = thread_id
                             bad_bot.listen()
                         if "!musicdl" in command:
-                            try:
-                                self.send(Message(text="Processing your audio."), thread_id=thread_id, thread_type=thread_type)
-                                q_f = "spotdl -s"
-                                link = message_object.text.split()
-                                url = link[1]
-                                os.system(f"{q_f} {url} -f C:/xampp/htdocs --overwrite skip")
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
-                                y_id = url.replace("https://www.youtube.com/watch?v=", "")
-                                get = requests.get(f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={y_id}&key=REMOVED")
-                                get = get.json()
-                                title = get['items'][0]['snippet']['localized']['title']
-                                f_title = title.replace('"','').replace(".", "")
-                                full_url = quote(f_title)
-                                self.send(Message(text=f"Link is ready!\nhttps://music.jamgph.com/{full_url}.m4a"), thread_id=thread_id, thread_type=thread_type)
-                            except IndexError:
-                                self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
-                            except KeyError:
-                                self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            self.send(Message(text="This feature has been removed due to its compability"), thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text="You can download the windows version of youtube downloader\nhttps://www.dropbox.com/s/xj4lk95me994cka/ytcrawler_installer.msi?dl=1"), thread_id=thread_id, thread_type=thread_type)
+                            
+                            # try:
+                            #     self.send(Message(text="Processing your audio."), thread_id=thread_id, thread_type=thread_type)
+                            #     link = message_object.text.split()
+                            #     url = link[1]
+                            #     y_id = url.replace("https://www.youtube.com/watch?v=", "")
+                            #     link = musicdl(y_id)
+                            #     self.send(Message(text=f"Link is ready!\n{link}"), thread_id=thread_id, thread_type=thread_type)
+                            # except IndexError:
+                            #     self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
+                            #     self.reactToMessage(message_object.uid, MessageReaction.NO)
+                            # except KeyError:
+                            #     self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
+                            #     self.reactToMessage(message_object.uid, MessageReaction.NO)
                         if "!bin" in command:
                             try:
                                 b = command.split()
@@ -1264,33 +1255,23 @@ class FacebookBot(Client):
                                 message_object.uid, MessageReaction.YES)
                             self.send(Message(text="COMMAND LIST:\n\n"
                                                    "!random image - random image\n\n"
-                                                   "!mirror on/off - mirror bot\n\n"
                                                    "!define word - define a word\n\n"
-                                                   "!lyrics artist, song - getting song lyrics\n\n"
+                                                   "!lyrics artist, song_title \n\n"
                                                    "!title name - change chat title\n\n"
                                                    "!nickname name - change your nickname\n\n"
                                                    "!search name - search a user\n\n"
-                                                   "!mod n1 n2 - modulus division\n\n"
                                                    "!speak words - speak bot\n\n"
-                                                   "!pause - pause bot\n\n"
-                                                   "!start - start bot\n\n"
                                                    "!network 0930 - show network\n\n"
                                                    "!text-to-image\n\n"
                                                    "!mac mac:address\n\n"
+                                                   "!musicdl link - dl yt mp3"
                                                    "!qr link\n\n"
                                                    "!forward file_link\n\n"
-                                                   "!mysql cheat-sheet\n\n"
-                                                   "!mysql show - show datas\n\n"
-                                                   "!mysql add message\n\n"
-                                                   "!mysql delete id\n\n"
-                                                   "!mysql update id message\n\n"
                                                    "!sm1 number message\n\n"
                                                    "!meme id#text1#text2\n\n"
                                                    "!meme id - show all id\n\n"
                                                    "!meme help\n\n"
                                                    "!musicdl youtube_link\n\n"
-                                                   "!bin, !hex, !oct - convert decimal\n\n"
-                                                   "!sqrt - \n\n"
                                                    "!math formula\n\n"
                                                    "!image-processing on - predicting object in image\n\n"
                                                    "!scanurl (url)\n\n"
