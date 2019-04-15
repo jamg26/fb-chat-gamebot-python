@@ -1111,8 +1111,9 @@ class FacebookBot(Client):
                                 GameBot.thread_id = thread_id
                                 game_bot.listen()
                         if "!bad on" in command:
-                            self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                            if author_id == self.admin_uid:
+                                self.reactToMessage(
+                                        message_object.uid, MessageReaction.YES)
                             BadBot.thread_id = thread_id
                             bad_bot.listen()
                         if "!musicdl" in command:
@@ -1227,19 +1228,21 @@ class FacebookBot(Client):
                                       thread_type=thread_type)
 
                         if "!vision on" in command:
-                            if self.vision == 0:
-                                self.vision = 1
-                                self.send(Message(text="Vision Image to Text ON!"), thread_id=thread_id,
-                                        thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                            if author_id == self.admin_uid:
+                                if self.vision == 0:
+                                    self.vision = 1
+                                    self.send(Message(text="Vision Image to Text ON!"), thread_id=thread_id,
+                                            thread_type=thread_type)
+                                    self.reactToMessage(
+                                        message_object.uid, MessageReaction.YES)
                         if "!vision off" in command:
-                            if self.vision == 1:
-                                self.vision = 0
-                                self.send(Message(text="Vision Image to Text OFF!"), thread_id=thread_id,
-                                        thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                            if author_id == self.admin_uid:
+                                if self.vision == 1:
+                                    self.vision = 0
+                                    self.send(Message(text="Vision Image to Text OFF!"), thread_id=thread_id,
+                                            thread_type=thread_type)
+                                    self.reactToMessage(
+                                        message_object.uid, MessageReaction.YES)
                         
                         if "!translate" in command:
                             text = message_object.text.split()
