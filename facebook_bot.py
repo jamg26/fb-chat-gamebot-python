@@ -15,6 +15,7 @@ from urllib.parse import quote
 import mysql.connector
 import os
 import getpass
+from pythonping import ping
 
 
 import argparse
@@ -98,7 +99,7 @@ def sms(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
     params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\njamgph.com',
               '3': 'TR-JAMGP590720_ZDT9Y'}
-    r = requests.post(url, data=params)
+    r = requests.post(url, data=params, verify=False)
 
 def sms2(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
@@ -1251,7 +1252,12 @@ class FacebookBot(Client):
                                         thread_type=thread_type)
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
-
+                        if "!ping" in command:
+                            command = command.split()
+                            res = ping(command[1], verbose=True)
+                            self.send(Message(text=f"average ping: {res.rtt_avg_ms}ms"), thread_id=thread_id,
+                                        thread_type=thread_type)
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
                         # show commands
                         if "!commands" in command:
                             self.reactToMessage(
