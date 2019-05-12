@@ -17,6 +17,12 @@ import os
 import getpass
 from pythonping import ping
 
+# mongodb
+import pymongo
+mclient = pymongo.MongoClient(
+    "mongodb+srv://jamg:jamuel26@jamg-cluster-ccgrf.gcp.mongodb.net/test?retryWrites=true")
+
+
 
 import argparse
 import io
@@ -43,6 +49,25 @@ my_cursor = my_db.cursor()
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def imgsearch(query):
+    r = requests.get("https://api.qwant.com/api/search/images",
+    params={
+        'count': 50,
+        'q': query,
+        't': 'images',
+        'safesearch': 1,
+        'locale': 'en_US',
+        'uiv': 4
+    },
+    headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
+    }
+    )
+    response = r.json().get('data').get('result').get('items')
+    urls = [r.get('media') for r in response]
+    return random.choice(urls)
+
 
 def translation(text):
     # Instantiates a client
@@ -219,14 +244,20 @@ class BadBot(Client):
         client.send(Message(text=f"{msg}"), thread_id=self.thread_id, thread_type=self.thread_type)
     
     def badbot_get(self, msg):
-        my_cursor.execute(f"SELECT * FROM badbot WHERE question = '{msg}'")
-        my_result = my_cursor.fetchall()
-        return my_result
+        db = mclient.bot
+        col = db.badbot
+        res = col.find({"question": msg})
+        return res
 
     def badbot_add(self, question, msg):
-        sql = f"INSERT INTO badbot (question, answer) VALUES ('{question}', '{msg}')"
-        my_cursor.execute(sql)
-        my_db.commit()
+        db = mclient.bot
+        col = db.badbot 
+        data = {"question": question, "response": msg}
+        col.insert_one(data)
+
+        # sql = f"INSERT INTO badbot (question, answer) VALUES ('{question}', '{msg}')"
+        # my_cursor.execute(sql)
+        # my_db.commit()
 
 
     def onQprimer(self, **kwargs):
@@ -244,11 +275,11 @@ class BadBot(Client):
             ans = []
             count = 0
             for x in question:
-                ans.append(x[2])
+                ans.append(x["response"])
                 count += 1
 
             if ans != []:
-                cls()
+                #cls()
                 u_sender = self.fetchUserInfo(author_id)[author_id]
                 ran = random.randint(0, count - 1)
                 ans_send = ans[ran]
@@ -1258,6 +1289,14 @@ class FacebookBot(Client):
                             self.send(Message(text=f"average ping: {res.rtt_avg_ms}ms"), thread_id=thread_id,
                                         thread_type=thread_type)
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
+                        if "!image" in command:
+                            q = command.split()
+                            query = " ".join(q[1:])
+                            res = imgsearch(query)
+                            self.sendRemoteImage(res, message=Message(text=''), thread_id=thread_id,
+                                                 thread_type=thread_type)
+                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+
                         # show commands
                         if "!commands" in command:
                             self.reactToMessage(
