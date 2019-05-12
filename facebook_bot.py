@@ -1292,10 +1292,15 @@ class FacebookBot(Client):
                         if "!image" in command:
                             q = command.split()
                             query = " ".join(q[1:])
-                            res = imgsearch(query)
-                            self.sendRemoteImage(res, message=Message(text=''), thread_id=thread_id,
-                                                 thread_type=thread_type)
-                            self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            try:
+                                res = imgsearch(query)
+                                self.sendRemoteImage(res, message=Message(text=''), thread_id=thread_id,
+                                                    thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except:
+                                self.send(Message(text=f"Please try again.."), thread_id=thread_id,
+                                        thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
 
                         # show commands
                         if "!commands" in command:
@@ -1325,6 +1330,7 @@ class FacebookBot(Client):
                                                    "!scanurl (url)\n\n"
                                                    "!vision on - image to text\n\n"
                                                    "!translate word\n\n"
+                                                   "!image (object) - search image\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
