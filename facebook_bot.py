@@ -50,6 +50,14 @@ my_cursor = my_db.cursor()
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def suggestquery(query):
+    headers = {'Content-Type': 'application/json'}
+    r = requests.get(f"http://suggestqueries.google.com/complete/search?output=toolbar&client=firefox&hl=en&q={query}", headers=headers)
+    r = r.json()
+    return r[1][0]
+
+
+
 def imgsearch(query):
     r = requests.get("https://api.qwant.com/api/search/images",
     params={
@@ -1301,6 +1309,16 @@ class FacebookBot(Client):
                                 self.send(Message(text=f"Please try again.."), thread_id=thread_id,
                                         thread_type=thread_type)
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if "!spell" in command:
+                            q = command.split()
+                            query = " ".join(q[1:])
+                            try:
+                                res = suggestquery(query)
+                                self.send(Message(text=f"Did you mean...\n{res}"), thread_id=thread_id,
+                                        thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
 
                         # show commands
                         if "!commands" in command:
@@ -1330,7 +1348,8 @@ class FacebookBot(Client):
                                                    "!scanurl (url)\n\n"
                                                    "!vision on - image to text\n\n"
                                                    "!translate word\n\n"
-                                                   "!image (object) - search image\n\n"
+                                                   "!image - search image\n\n"
+                                                   "!spell - suggest/autocomplete word"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
