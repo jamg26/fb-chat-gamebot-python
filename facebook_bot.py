@@ -765,6 +765,8 @@ class GameBot(Client):
                             message_object.uid, MessageReaction.YES)
                         self.send(Message(text="Type !join to participate"),
                                   thread_id=thread_id, thread_type=thread_type)
+        
+
 
 
 class FacebookBot(Client):
@@ -775,6 +777,12 @@ class FacebookBot(Client):
     bot_name = "!bot start"
     game = 0
     vision = 0
+
+    # groups
+    bsit = "1503744573087777"
+    rthb = "2288054797953239"
+    testing = "2146979205353207"
+    chuvaness = "1574454682870723"
 
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
@@ -980,6 +988,28 @@ class FacebookBot(Client):
                             self.sendLocalFiles(
                                 path, "", thread_id, thread_type)
                             os.remove(path)
+                            
+                        # speak bot to a group
+                        if "!msgto" in message_object.text:
+                            try:
+                                data = message_object.text.split()
+                                t = data[1]
+                                voice = " ".join(data[2:])
+                                tts = gTTS(text=voice, lang='en')
+                                path = f"audio/{voice}.mp3"
+                                tts.save(path)
+                                self.sendLocalFiles(
+                                    path, "", t, thread_type)
+                                os.remove(path)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+                            except:
+                                self.sendLocalFiles(
+                                    path, "", t, ThreadType.USER)
+                                os.remove(path)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
+
                         # find network
                         if "!network" in command:
                             com = command.split()
