@@ -207,7 +207,7 @@ def define(word):
     app_id = '0d6c4d8a'
     app_key = '642dd9bb994eb786bea9ac1453dedb07'
     language = 'en'
-    url = f'https://od-api.oxforddictionaries.com:443/api/v1/entries/{language}/{word.lower()}'
+    url = f'https://od-api.oxforddictionaries.com:443/api/v2/entries/{language}/{word.lower()}'
     r = requests.get(url, headers={'app_id': app_id, 'app_key': app_key})
     
     if r.status_code == 404:
