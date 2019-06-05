@@ -871,10 +871,15 @@ class FacebookBot(Client):
                                         self.reactToMessage(
                                             message_object.uid, MessageReaction.NO)
                                     else:
-                                        self.reactToMessage(
-                                            message_object.uid, MessageReaction.YES)
-                                        self.send(
-                                            Message(text=d), thread_id=thread_id, thread_type=thread_type)
+                                        if d != "No data":
+                                            self.reactToMessage(
+                                                message_object.uid, MessageReaction.YES)
+                                            self.send(
+                                                Message(text=d), thread_id=thread_id, thread_type=thread_type)
+                                        else:
+                                            res = suggestquery(defined[1])
+                                            self.send(
+                                                Message(text=f"did you mean...\n{res}"), thread_id=thread_id, thread_type=thread_type)
                                 except IndexError:
                                     self.reactToMessage(
                                         message_object.uid, MessageReaction.NO)
@@ -961,9 +966,11 @@ class FacebookBot(Client):
                         if "!about" in command:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="PyBatibot virtual assistant for facebook"),
+                            self.send(Message(text="Virtual assistant for Facebook"),
                                       thread_id=thread_id, thread_type=thread_type)
                             self.send(Message(text="Created by: Jamuel Galicia"),
+                                      thread_id=thread_id, thread_type=thread_type)
+                            self.send(Message(text="Last Update: May 14, 2019"),
                                       thread_id=thread_id, thread_type=thread_type)
                         # pause bot
                         if "!pause" in command:
@@ -974,8 +981,8 @@ class FacebookBot(Client):
                                     Message(text="Bot paused!"), thread_id=thread_id, thread_type=thread_type)
                                 self.bot = 0
                             else:
-                                self.send(Message(text="di po ikaw boss ko"), thread_id=thread_id,
-                                          thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.NO)
                         # speak bot
                         if "!speak" in command:
                             self.reactToMessage(
@@ -1025,7 +1032,7 @@ class FacebookBot(Client):
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.NO)
                         # converting image to text
-                        if "!text-to-image" in command:
+                        if "!write" in command:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
                             text = message_object.text.split()
@@ -1344,9 +1351,14 @@ class FacebookBot(Client):
                             query = " ".join(q[1:])
                             try:
                                 res = suggestquery(query)
-                                self.send(Message(text=f"Did you mean...\n{res}"), thread_id=thread_id,
-                                        thread_type=thread_type)
-                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                if res != query:
+                                    self.send(Message(text=f"Did you mean...\n{res}"), thread_id=thread_id,
+                                            thread_type=thread_type)
+                                    self.reactToMessage(message_object.uid, MessageReaction.YES)
+                                else:
+                                    self.send(Message(text=f"You spelled it correctly."), thread_id=thread_id,
+                                            thread_type=thread_type)
+                                    self.reactToMessage(message_object.uid, MessageReaction.YES)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
 
@@ -1363,23 +1375,23 @@ class FacebookBot(Client):
                                                    "!search name - search a user\n\n"
                                                    "!speak words - speak bot\n\n"
                                                    "!network 0930 - show network\n\n"
-                                                   "!text-to-image\n\n"
+                                                   "!write\n\n"
                                                    "!mac mac:address\n\n"
-                                                   "!musicdl link - dl yt mp3"
+                                                   #"!musicdl link - dl yt mp3"
                                                    "!qr link\n\n"
                                                    "!forward file_link\n\n"
                                                    "!sm1 number message\n\n"
                                                    "!meme id#text1#text2\n\n"
                                                    "!meme id - show all id\n\n"
                                                    "!meme help\n\n"
-                                                   "!musicdl youtube_link\n\n"
+                                                   #"!musicdl youtube_link\n\n"
                                                    "!math formula\n\n"
-                                                   "!image-processing on - predicting object in image\n\n"
+                                                   #"!image-processing on - predicting object in image\n\n"
                                                    "!scanurl (url)\n\n"
                                                    "!vision on - image to text\n\n"
                                                    "!translate word\n\n"
                                                    "!image - search image\n\n"
-                                                   "!spell - suggest/autocomplete word"
+                                                   "!spell - suggest/autocomplete word\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
