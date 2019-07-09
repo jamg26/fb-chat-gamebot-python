@@ -16,6 +16,9 @@ import mysql.connector
 import os
 import getpass
 from pythonping import ping
+import time
+from pprint import pprint
+import base64
 
 # mongodb
 import pymongo
@@ -49,6 +52,41 @@ my_cursor = my_db.cursor()
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def guessage(url):
+
+    # 1. Get your API token from https://aiception.com/dashboard
+    token = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aW1lIjoxNTYyNjQxOTc1LjI3MTQ1NSwiaWQiOjE0fQ.-keqe4Zt0I9FLTugfsYDeZheERsRBDY7pDG28OYF-ow'
+
+    # 2. Let's find the approximate age of Taylor Swift from this image
+    r = requests.post('https://aiception.com/api/v2.1/face_age',
+                    auth=(token, 'password is ignored'),
+                    json={'image_url': url})
+
+    # 2b. The Response object r has a JSON response
+    # print('Headers')
+    # pprint(r.headers)
+
+    #print('Server response to our POST request')
+    # pprint(r.json())
+    # {'Location': 'https://aiception.com/api/v2.1/face_age/12', 'message': 'age task created'}
+
+    # The Location value is both in the headers and in the json body
+    age_task_url = r.headers['Location']
+    # age_task_url = r.json()['Location']  # is also fine
+
+
+    # wait 2 seconds for aiception to complete the task
+    time.sleep(2)
+
+    # 3. Use the Location to get the age task
+    r = requests.get(age_task_url, auth=(token, 'password is ignored'))
+    x = r.json()
+    # 3b. We now have an answer with the age of Taylor Swift
+    #print('Server response to our GET request')
+    # pprint(r.json())
+    return x['answer']['age']
+
 
 def removebg(path):
     p = 'image/no-bg.png'
@@ -793,8 +831,10 @@ class FacebookBot(Client):
     admin_uid = "100005766793253"
     bot_name = "!bot start"
     game = 0
+
     vision = 0
     removebg = 0
+    guessage = 0
 
     # groups
     bsit = "1503744573087777"
@@ -1384,6 +1424,13 @@ class FacebookBot(Client):
                                 self.removebg = 1
                                 self.send(Message(text=f"Please send your image."), thread_id=thread_id,
                                                 thread_type=thread_type)
+
+                        if "!guessage" in command:
+                            if self.guessage == 0:
+                                self.guessage = 1
+                                self.send(Message(text=f"Please send your image."), thread_id=thread_id,
+                                                thread_type=thread_type)
+
                         # show commands
                         if "!commands" in command:
                             self.reactToMessage(
@@ -1414,6 +1461,8 @@ class FacebookBot(Client):
                                                    "!translate word\n\n"
                                                    "!image - search image\n\n"
                                                    "!spell - suggest/autocomplete word\n\n"
+                                                   "!removebg - remove background from image\n\n"
+                                                   "!guessage - guess your age\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
@@ -1445,7 +1494,14 @@ class FacebookBot(Client):
                                 self.send(Message(text=f"!removebg to process another image."), thread_id=thread_id, thread_type=thread_type)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
-            else:
+                        if self.guessage == 1:
+                            try:
+                                self.guessage = 0
+                                self.send(Message(text=f"predicted age: {guessage(url)}"), thread_id=thread_id, thread_type=thread_type)
+                                self.send(Message(text=f"!guessage to process another image."), thread_id=thread_id, thread_type=thread_type)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+            else:   
                 if author_id != self.uid:
                     self.markAsDelivered(thread_id, message_object.uid)
                     self.markAsRead(thread_id)
