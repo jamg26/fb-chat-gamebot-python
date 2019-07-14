@@ -1388,12 +1388,9 @@ def start_bot():
     global fb_bot
     global game_bot
     global bad_bot
-    fb_bot = FacebookBot("", "",
-                         session_cookies=session_cookies)
-    game_bot = GameBot("", "",
-                       session_cookies=session_cookies)
-    bad_bot = BadBot("", "",
-                       session_cookies=session_cookies)
+    fb_bot = FacebookBot("", "", session_cookies=session_cookies)
+    game_bot = GameBot("", "",  session_cookies=session_cookies)
+    bad_bot = BadBot("", "", session_cookies=session_cookies)
     
     fb_bot.listen()
 
