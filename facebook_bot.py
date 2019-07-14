@@ -844,8 +844,7 @@ class FacebookBot(Client):
 
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
-        self.sendMessage("Hello! you added me",
-                         from_id, thread_type=ThreadType.USER)
+        self.sendMessage("Hello! you added me", from_id, thread_type=ThreadType.USER)
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
         if self.bot == 0:  # read if bot = 0
@@ -1150,94 +1149,17 @@ class FacebookBot(Client):
                             except FBchatFacebookError:
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.NO)
-                        # mysql prototype
-                        if "!mysql show" in command:
-                            tip = "Executing\nSELECT * from table_name;"
-                            self.send(
-                                Message(text=tip), thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="MESSAGE"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            try:
-                                self.send(
-                                    Message(text=mysql_get()), thread_id=thread_id, thread_type=thread_type)
-                            except fbchat.models.FBchatFacebookError:
-                                self.send(
-                                    Message(text='no data'), thread_id=thread_id, thread_type=thread_type)
-                        if "!mysql add" in command:
-                            message = message_object.text.split()
-                            msg = " ".join(message[2:])
-                            tip = f"Executing\nINSERT INTO table_name (column1)\nVALUES('{msg}');"
-                            self.send(
-                                Message(text=tip), thread_id=thread_id, thread_type=thread_type)
-                            mysql_add(msg)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(
-                                Message(text=f"'{msg}' added"), thread_id=thread_id, thread_type=thread_type)
-                        if "!mysql delete" in command:
-                            message = message_object.text.split()
-                            self.send(Message(text=f"Executing\nDELETE FROM table_name WHERE message = '{message[2]}'"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            try:
-                                mysql_delete(message[2])
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text="deleted"), thread_id=thread_id, thread_type=thread_type)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except mysql.connector.errors.ProgrammingError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                        if "!mysql update" in command:
-                            message = message_object.text.split()
-                            msg = " ".join(message[3:])
-                            self.send(Message(
-                                text=f"Executing\nUPDATE table_name SET message = '{msg}' WHERE message='{message[2]}'"), thread_id=thread_id, thread_type=thread_type)
-                            try:
-                                mysql_update(message[2], msg)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text="updated"), thread_id=thread_id, thread_type=thread_type)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except mysql.connector.errors.ProgrammingError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                        
                         # sending sms
-                        if "!sm1" in command:
+                        if "!sms" in command:
                             msg = command.split()
                             message = " ".join(msg[2:])
                             number = msg[1]
                             sms(number, message)
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Message sent! from api 1"),
+                            self.send(Message(text="Message sent!"),
                                       thread_id=thread_id, thread_type=thread_type)
-                        if "!sm2" in command:
-                            msg = command.split()
-                            message = " ".join(msg[2:])
-                            number = msg[1]
-                            sms2(number, message)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Message sent! from api 2"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                        if "!sm3" in command:
-                            msg = command.split()
-                            message = " ".join(msg[2:])
-                            number = msg[1]
-                            sms3(number, message)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Message sent! from api 3"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                        
                         if "!game on" in command:
                             if author_id == self.admin_uid:
                                 self.reactToMessage(
@@ -1251,23 +1173,6 @@ class FacebookBot(Client):
                                         message_object.uid, MessageReaction.YES)
                             BadBot.thread_id = thread_id
                             bad_bot.listen()
-                        if "!musicdl" in command:
-                            self.send(Message(text="This feature has been removed due to its compability"), thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="You can download the windows version of youtube downloader\nhttps://www.dropbox.com/s/xj4lk95me994cka/ytcrawler_installer.msi?dl=1"), thread_id=thread_id, thread_type=thread_type)
-                            
-                            # try:
-                            #     self.send(Message(text="Processing your audio."), thread_id=thread_id, thread_type=thread_type)
-                            #     link = message_object.text.split()
-                            #     url = link[1]
-                            #     y_id = url.replace("https://www.youtube.com/watch?v=", "")
-                            #     link = musicdl(y_id)
-                            #     self.send(Message(text=f"Link is ready!\n{link}"), thread_id=thread_id, thread_type=thread_type)
-                            # except IndexError:
-                            #     self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
-                            #     self.reactToMessage(message_object.uid, MessageReaction.NO)
-                            # except KeyError:
-                            #     self.send(Message(text="Invalid link!"), thread_id=thread_id, thread_type=thread_type)
-                            #     self.reactToMessage(message_object.uid, MessageReaction.NO)
                         if "!bin" in command:
                             try:
                                 b = command.split()
@@ -1326,28 +1231,7 @@ class FacebookBot(Client):
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
                             except IndexError:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
-                        # SQL Cheat sheet
-                        if "!mysql cheat-sheet" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="SELECT * FROM table_name;"), thread_id=thread_id,
-                                      thread_type=thread_type)
-                            self.send(Message(text="SELECT column_name FROM table_name;"), thread_id=thread_id,
-                                      thread_type=thread_type)
-                            self.send(Message(text="INSERT INTO table_name (column1, column2, column3, ...)\n"
-                                                   "VALUES (value1, value2, value3, ...);"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="UPDATE table_name\nSET column1 = value1, column2 = value2, ..."
-                                                   "\nWHERE condition;"), thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="DELETE FROM table_name WHERE condition;"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="CREATE DATABASE databasename;"), thread_id=thread_id,
-                                      thread_type=thread_type)
-                            self.send(Message(text="CREATE TABLE table_name (\ncolumn1 datatype,"
-                                                   "column2 datatype,\n"
-                                                   "column3 datatype,\n"
-                                                   "....\n"
-                                                   ");"), thread_id=thread_id, thread_type=thread_type)
+                                
                         if "!scanurl" in command:
                             command = command.split()
                             try:
@@ -1363,21 +1247,12 @@ class FacebookBot(Client):
                                       thread_type=thread_type)
 
                         if "!vision on" in command:
-                            if author_id == self.admin_uid:
-                                if self.vision == 0:
-                                    self.vision = 1
-                                    self.send(Message(text="Vision Image to Text ON!"), thread_id=thread_id,
-                                            thread_type=thread_type)
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.YES)
-                        if "!vision off" in command:
-                            if author_id == self.admin_uid:
-                                if self.vision == 1:
-                                    self.vision = 0
-                                    self.send(Message(text="Vision Image to Text OFF!"), thread_id=thread_id,
-                                            thread_type=thread_type)
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.YES)
+                            if self.vision == 0:
+                                self.vision = 1
+                                self.send(Message(text="Please send your image!"), thread_id=thread_id,
+                                        thread_type=thread_type)
+                                self.reactToMessage(
+                                    message_object.uid, MessageReaction.YES)
                         
                         if "!translate" in command:
                             text = message_object.text.split()
@@ -1444,18 +1319,15 @@ class FacebookBot(Client):
                                                    "!search name - search a user\n\n"
                                                    "!speak words - speak bot\n\n"
                                                    "!network 0930 - show network\n\n"
-                                                   "!write\n\n"
+                                                   "!write message\n\n"
                                                    "!mac mac:address\n\n"
-                                                   #"!musicdl link - dl yt mp3"
                                                    "!qr link\n\n"
                                                    "!forward file_link\n\n"
-                                                   "!sm1 number message\n\n"
+                                                   "!sms {number} {message}\n\n"
                                                    "!meme id#text1#text2\n\n"
                                                    "!meme id - show all id\n\n"
                                                    "!meme help\n\n"
-                                                   #"!musicdl youtube_link\n\n"
                                                    "!math formula\n\n"
-                                                   #"!image-processing on - predicting object in image\n\n"
                                                    "!scanurl (url)\n\n"
                                                    "!vision on - image to text\n\n"
                                                    "!translate word\n\n"
@@ -1483,9 +1355,14 @@ class FacebookBot(Client):
                         path = "image/" + thread_id + "_temp.jpg"
                         urllib.request.urlretrieve(url, path)
                         if self.vision == 1:
-                            self.send(Message(text=detect_text(f"image/{thread_id}_temp.jpg")), thread_id=thread_id, thread_type=thread_type)
-                            self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                            try:
+                                self.vision = 0
+                                self.send(Message(text=detect_text(f"image/{thread_id}_temp.jpg")), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(
+                                        message_object.uid, MessageReaction.YES)
+                                self.send(Message(text=f"!vision to process another image."), thread_id=thread_id, thread_type=thread_type)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
                         if self.removebg == 1:
                             try:
                                 self.removebg = 0
