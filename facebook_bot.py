@@ -1171,8 +1171,8 @@ class FacebookBot(Client):
                             if author_id == self.admin_uid:
                                 self.reactToMessage(
                                         message_object.uid, MessageReaction.YES)
-                            BadBot.thread_id = thread_id
-                            bad_bot.listen()
+                                BadBot.thread_id = thread_id
+                                bad_bot.listen()
                         if "!bin" in command:
                             try:
                                 b = command.split()
@@ -1246,7 +1246,7 @@ class FacebookBot(Client):
                                 self.send(Message(text="Scanning url... Try again"), thread_id=thread_id,
                                       thread_type=thread_type)
 
-                        if "!vision on" in command:
+                        if "!vision" == command:
                             if self.vision == 0:
                                 self.vision = 1
                                 self.send(Message(text="Please send your image!"), thread_id=thread_id,
@@ -1294,20 +1294,20 @@ class FacebookBot(Client):
                                     self.reactToMessage(message_object.uid, MessageReaction.YES)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
-                        if "!removebg" in command:
+                        if "!removebg" == command:
                             if self.removebg == 0:
                                 self.removebg = 1
                                 self.send(Message(text=f"Please send your image."), thread_id=thread_id,
                                                 thread_type=thread_type)
 
-                        if "!guessage" in command:
+                        if "!guessage" == command:
                             if self.guessage == 0:
                                 self.guessage = 1
                                 self.send(Message(text=f"Please send your image."), thread_id=thread_id,
                                                 thread_type=thread_type)
 
                         # show commands
-                        if "!commands" in command:
+                        if "!commands" == command:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
                             self.send(Message(text="COMMAND LIST:\n\n"
@@ -1329,7 +1329,7 @@ class FacebookBot(Client):
                                                    "!meme help\n\n"
                                                    "!math formula\n\n"
                                                    "!scanurl (url)\n\n"
-                                                   "!vision on - image to text\n\n"
+                                                   "!vision - image to text\n\n"
                                                    "!translate word\n\n"
                                                    "!image - search image\n\n"
                                                    "!spell - suggest/autocomplete word\n\n"
