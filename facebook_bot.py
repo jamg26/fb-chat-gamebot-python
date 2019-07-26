@@ -20,6 +20,14 @@ import time
 from pprint import pprint
 import base64
 
+#face recognition
+import face_recognition as fr
+import os
+import cv2
+import face_recognition
+import numpy as np
+
+
 # mongodb
 import pymongo
 mclient = pymongo.MongoClient(
@@ -51,6 +59,94 @@ my_cursor = my_db.cursor()
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+# image recognition
+def get_encoded_faces():
+    """
+    looks through the faces folder and encodes all
+    the faces
+
+    :return: dict of (name, image encoded)
+    """
+    encoded = {}
+
+    for dirpath, dnames, fnames in os.walk("./faces"):
+        for f in fnames:
+            if f.endswith(".jpg") or f.endswith(".png"):
+                face = fr.load_image_file("faces/" + f)
+                encoding = fr.face_encodings(face)[0]
+                encoded[f.split(".")[0]] = encoding
+
+    return encoded
+
+
+def unknown_image_encoded(img):
+    """
+    encode a face given the file name
+    """
+    face = fr.load_image_file("faces/" + img)
+    encoding = fr.face_encodings(face)[0]
+
+    return encoding
+
+
+def classify_face(im):
+    """
+    will find all of the faces in a given image and label
+    them if it knows what they are
+
+    :param im: str of file path
+    :return: list of face names
+    """
+    faces = get_encoded_faces()
+    faces_encoded = list(faces.values())
+    known_face_names = list(faces.keys())
+
+    img = cv2.imread(im, 1)
+    #img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+    #img = img[:,:,::-1]
+
+    face_locations = face_recognition.face_locations(img)
+    unknown_face_encodings = face_recognition.face_encodings(
+        img, face_locations)
+
+    face_names = []
+    for face_encoding in unknown_face_encodings:
+        # See if the face is a match for the known face(s)
+        matches = face_recognition.compare_faces(faces_encoded, face_encoding)
+        name = "Unknown"
+
+        # use the known face with the smallest distance to the new face
+        face_distances = face_recognition.face_distance(
+            faces_encoded, face_encoding)
+        best_match_index = np.argmin(face_distances)
+        if matches[best_match_index]:
+            name = known_face_names[best_match_index]
+
+        face_names.append(name)
+
+        for (top, right, bottom, left), name in zip(face_locations, face_names):
+            # Draw a box around the face
+            cv2.rectangle(img, (left-20, top-20),
+                          (right+20, bottom+20), (255, 0, 0), 2)
+
+            # Draw a label with a name below the face
+            cv2.rectangle(img, (left-20, bottom - 15),
+                          (right+20, bottom+20), (255, 0, 0), cv2.FILLED)
+            font = cv2.FONT_HERSHEY_DUPLEX
+            cv2.putText(img, name, (left - 20, bottom + 15),
+                        font, 1.0, (255, 255, 255), 2)
+
+    # Display the resulting image
+    cv2.imwrite(f"output/{face_names[0]}.jpg", img)
+    return face_names
+    # while True:
+
+    # cv2.imshow('Video', img)
+    # if cv2.waitKey(1) & 0xFF == ord('q'):
+    #     return face_names
+
+# image recognition end
 
 
 def synonyms(word):
@@ -846,6 +942,9 @@ class FacebookBot(Client):
     vision = 0
     removebg = 0
     guessage = 0
+    recognition = 0
+    recognition_rename = 0
+    guesswho = 0
 
     # groups
     bsit = "1503744573087777"
@@ -883,6 +982,11 @@ class FacebookBot(Client):
                     command = message_object.text.lower()
                 if author_id != self.uid:
                     if file_type == "%text":  # if filetype is text
+                        if self.recognition_rename == 1:
+                            self.recognition_rename = 0
+                            os.rename(f"faces/{thread_id}.jpg", f"faces/{command}.jpg")
+                            self.send(Message(text=f"{command}'s image has been added."),
+                                    thread_id=thread_id, thread_type=thread_type)
                         # provide random quotes
                         if "!meme help" in command:
                             self.reactToMessage(message_object.uid, MessageReaction.YES)
@@ -1323,7 +1427,20 @@ class FacebookBot(Client):
                                 self.reactToMessage(message_object.uid, MessageReaction.YES)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+
+                        if "!train" == command:
+                            try:
+                                self.recognition = 1
+                                self.send(Message(text=f"Please send your image to be trained"), thread_id=thread_id, thread_type=thread_type)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
                                             
+                        if "!guesswho" == command:
+                            try:
+                                self.guesswho = 1
+                                self.send(Message(text=f"Please send your image to be guessed"), thread_id=thread_id, thread_type=thread_type)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
                         # show commands
                         if "!commands" == command:
                             self.reactToMessage(
@@ -1395,6 +1512,25 @@ class FacebookBot(Client):
                                 self.guessage = 0
                                 self.send(Message(text=f"predicted age: {guessage(url)}"), thread_id=thread_id, thread_type=thread_type)
                                 self.send(Message(text=f"!guessage to process another image."), thread_id=thread_id, thread_type=thread_type)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if self.recognition == 1:
+                            try:
+                                self.recognition = 0
+                                self.send(Message(text=f"Who is that person?"), thread_id=thread_id, thread_type=thread_type)
+                                urllib.request.urlretrieve(url, f"faces/{thread_id}.jpg")
+                                self.recognition_rename = 1
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        if self.guesswho == 1:
+                            try:
+                                self.guesswho = 0
+                                names = []
+                                for x in classify_face(path):
+                                    names.append(x)
+                                name = ", ".join(names)
+                                self.send(Message(text=f"I think that person is {name}"), thread_id=thread_id, thread_type=thread_type)
+                                self.sendLocalFiles(f"output/{classify_face(path)[0]}.jpg", "", thread_id, thread_type)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
             else:
