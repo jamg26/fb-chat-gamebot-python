@@ -945,6 +945,7 @@ class FacebookBot(Client):
     recognition = 0
     recognition_rename = 0
     guesswho = 0
+    guesswho_upload = 0
 
     # groups
     bsit = "1503744573087777"
@@ -1416,11 +1417,10 @@ class FacebookBot(Client):
                                                 thread_type=thread_type)
 
                         if "!guessage" == command:
-                            if author_id == self.admin_uid:
-                                if self.guessage == 0:
-                                    self.guessage = 1
-                                    self.send(Message(text=f"Please send your image."), thread_id=thread_id,
-                                                    thread_type=thread_type)
+                            if self.guessage == 0:
+                                self.guessage = 1
+                                self.send(Message(text=f"Please send your image."), thread_id=thread_id,
+                                                thread_type=thread_type)
                             else:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
                         if "!syn" in command:
@@ -1441,9 +1441,19 @@ class FacebookBot(Client):
                         if "!guesswho" == command:
                             try:
                                 self.guesswho = 1
-                                self.send(Message(text=f"Please send your image to be guessed"), thread_id=thread_id, thread_type=thread_type)
+                                self.send(Message(text=f"Please send persons image"), thread_id=thread_id, thread_type=thread_type)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+
+                        if "!guesswho-img" == command:
+                            if author_id == self.admin_uid:
+                                try:
+                                    self.guesswho_upload = 1
+                                    self.send(Message(text=f"Please send persons image"), thread_id=thread_id, thread_type=thread_type)
+                                except:
+                                    self.reactToMessage(message_object.uid, MessageReaction.NO)
+
+                        
                         # show commands
                         if "!commands" == command:
                             self.reactToMessage(
@@ -1532,10 +1542,29 @@ class FacebookBot(Client):
                                 for x in classify_face(path):
                                     names.append(x)
                                 name = ", ".join(names)
-                                self.send(Message(text=f"I think that person is {name}"), thread_id=thread_id, thread_type=thread_type)
-                                self.sendLocalFiles(f"output/{classify_face(path)[0]}.jpg", "", thread_id, thread_type)
+                                if name == "Unknown":
+                                    self.send(Message(text=f"The person is not recognized\n\n!train to add"), thread_id=thread_id, thread_type=thread_type)
+                                else:
+                                    self.send(Message(text=f"I think that person is {name}"), thread_id=thread_id, thread_type=thread_type)
+                                #self.sendLocalFiles(f"output/{classify_face(path)[0]}.jpg", "", thread_id, thread_type)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
+
+                        if self.guesswho_upload == 1:
+                            try:
+                                self.guesswho_upload = 0
+                                names = []
+                                for x in classify_face(path):
+                                    names.append(x)
+                                name = ", ".join(names)
+                                if name == "Unknown":
+                                    self.send(Message(text=f"The person is not recognized\n!train to add"), thread_id=thread_id, thread_type=thread_type)
+                                else:
+                                    #self.send(Message(text=f"I think that person is {name}"), thread_id=thread_id, thread_type=thread_type)
+                                    self.sendLocalFiles(f"output/{classify_face(path)[0]}.jpg", "", thread_id, thread_type)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                        
             else:
                 if author_id != self.uid:
                     self.markAsDelivered(thread_id, message_object.uid)
