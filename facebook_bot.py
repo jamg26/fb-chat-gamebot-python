@@ -32,7 +32,6 @@ import io
 import re
 import sys
 
-
 # Imports the Google Cloud client library
 from google.cloud import vision
 from google.cloud.vision import types
@@ -53,8 +52,20 @@ my_cursor = my_db.cursor()
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def guessage(url):
 
+def synonyms(word):
+    r = requests.get(f"https://api.datamuse.com/words?rel_syn={word}")
+    r = r.json()
+    # print(r[0]['word'])
+    res = []
+    for x in r:
+      res.append(x['word'])
+      # print(x['word'])
+    res = "\n".join(res)
+    return res
+
+
+def guessage(url):
     # 1. Get your API token from https://aiception.com/dashboard
     token = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aW1lIjoxNTYyNjQxOTc1LjI3MTQ1NSwiaWQiOjE0fQ.-keqe4Zt0I9FLTugfsYDeZheERsRBDY7pDG28OYF-ow'
 
@@ -314,7 +325,7 @@ class BadBot(Client):
 
     def badbot_add(self, question, msg):
         db = mclient.bot
-        col = db.badbot 
+        col = db.badbot
         data = {"question": question, "response": msg}
         col.insert_one(data)
 
@@ -403,7 +414,7 @@ class GameBot(Client):
     admin_uid = "100005766793253" # admin uid
 
     # game options default
-    game_math = 0 
+    game_math = 0
     game_tt = 0
     game_all = 1
     game_opm = 0
@@ -1305,7 +1316,14 @@ class FacebookBot(Client):
                                 self.guessage = 1
                                 self.send(Message(text=f"Please send your image."), thread_id=thread_id,
                                                 thread_type=thread_type)
-
+                        if "!syn" in command:
+                            try:
+                                word = command.split()
+                                self.send(Message(text=f"{synonyms(word[1])}"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
+                                            
                         # show commands
                         if "!commands" == command:
                             self.reactToMessage(
@@ -1335,6 +1353,7 @@ class FacebookBot(Client):
                                                    "!spell - suggest/autocomplete word\n\n"
                                                    "!removebg - remove background from image\n\n"
                                                    "!guessage - guess your age\n\n"
+                                                   "!syn - get synonyms\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
@@ -1378,7 +1397,7 @@ class FacebookBot(Client):
                                 self.send(Message(text=f"!guessage to process another image."), thread_id=thread_id, thread_type=thread_type)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
-            else:   
+            else:
                 if author_id != self.uid:
                     self.markAsDelivered(thread_id, message_object.uid)
                     self.markAsRead(thread_id)
