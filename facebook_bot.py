@@ -45,7 +45,7 @@ from google.cloud import vision
 from google.cloud.vision import types
 from google.cloud import translate
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\jammm\\Documents\\jamgph-a2c23146675e.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\jammm\\Documents\\YoutubeAPI-8315fef19e56.json"
 
 
 # my_db = mysql.connector.connect(
