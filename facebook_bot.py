@@ -48,13 +48,14 @@ from google.cloud import translate
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\jammm\\Documents\\jamgph-a2c23146675e.json"
 
 
-my_db = mysql.connector.connect(
-    host="35.187.240.251",
-    user="jamg",
-    passwd="jamuel26",
-    database="bot"
-)
-my_cursor = my_db.cursor()
+# my_db = mysql.connector.connect(
+#     host="35.187.240.251",
+#     user="jamg",
+#     passwd="jamuel26",
+#     database="bot"
+# )
+
+# my_cursor = my_db.cursor()
 
 
 def cls():
@@ -961,6 +962,7 @@ class FacebookBot(Client):
     recognition_rename = 0
     guesswho = 0
     guesswho_upload = 0
+    location = 0
 
     # groups
     bsit = "1503744573087777"
@@ -971,6 +973,58 @@ class FacebookBot(Client):
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
         self.sendMessage("Hello! you added me", from_id, thread_type=ThreadType.USER)
+
+    def addloc(self, id, lat, lon):
+        try:
+            db = mclient.bot
+            col = db.location
+            r = self.getloc(id)
+            if r['id']:
+                data = {"$set": {"lat": lat, "lon": lon}}
+                col.update_one(r, data)
+        except TypeError:
+            db = mclient.bot
+            col = db.location
+            data = {"id": id, "lat": lat, "lon": lon}
+            col.insert_one(data)
+
+    def getloc(self, id):
+        db = mclient.bot
+        col = db.location
+        res = col.find_one({"id": id})
+        self.mapview(res['id'], res['lat'], res['lon'])
+        self.streetview(res['id'], res['lat'], res['lon'])
+        return self.getlocname(res['lat'], res['lon'])
+        
+    def mapview(self, id, lat, lon):
+        endpoint = f"https://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom=20&size=500x400&markers=size:mid|{lat}, {lon}&maptype=hybrid&key=REMOVED"
+        r = requests.get(endpoint)
+        with open(f'image/{id}_mapview.png', 'wb') as f:
+            f.write(r.content)
+    
+    def streetview(self, id, lat, lon):
+        endpoint = f"https://maps.googleapis.com/maps/api/streetview?location={lat}, {lon}&size=600x400&fov=120&source=outdoor&key=REMOVED"
+        r = requests.get(endpoint)
+        with open(f'image/{id}_streetview.png', 'wb') as f:
+            f.write(r.content)
+    
+    def getlocname(self, lat, lon):
+        endpoint = f"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat}, {lon}&key=REMOVED"
+        r = requests.get(endpoint)
+        r = r.json()
+        return r['results'][0]['formatted_address']
+
+    def onLiveLocation(self, mid, location, author_id, thread_id, thread_type, ts, msg):
+        #cls()
+        #self.sendMessage(f"{location}", thread_id, thread_type=ThreadType.GROUP)
+        #print(location.latitude, location.longitude)
+        if self.location == 1:
+            self.location = 0
+            if location.latitude != None:
+                self.addloc(author_id, location.latitude, location.longitude)
+                self.sendMessage("Your location has been added!", thread_id, thread_type=thread_type)
+                self.sendMessage("!getlocation to verify", thread_id, thread_type=thread_type)
+                
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
         if self.bot == 0:  # read if bot = 0
@@ -1470,8 +1524,20 @@ class FacebookBot(Client):
                                     self.send(Message(text=f"Please send persons image"), thread_id=thread_id, thread_type=thread_type)
                                 except:
                                     self.reactToMessage(message_object.uid, MessageReaction.NO)
-
                         
+                        if "!setlocation" == command:
+                            self.location = 1
+                            self.send(Message(text=f"Share your location"), thread_id=thread_id, thread_type=thread_type)
+                        
+                        if "!getlocation" == command:
+                            try:
+                                self.send(Message(text=f"{self.getloc(author_id)}"), thread_id=thread_id, thread_type=thread_type)
+                                self.sendLocalFiles(f"image/{author_id}_mapview.png", "", thread_id, thread_type)
+                                self.sendLocalFiles(f"image/{author_id}_streetview.png", "", thread_id, thread_type)
+                            except TypeError:
+                                self.send(Message(text=f"No location info"), thread_id=thread_id, thread_type=thread_type)
+                                self.send(Message(text=f"!setlocation to add"), thread_id=thread_id, thread_type=thread_type)
+
                         # show commands
                         if "!commands" == command:
                             self.reactToMessage(
