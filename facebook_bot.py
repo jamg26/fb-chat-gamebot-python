@@ -962,7 +962,10 @@ class FacebookBot(Client):
     recognition_rename = 0
     guesswho = 0
     guesswho_upload = 0
+
+    #geoloc
     location = 0
+    
 
     # groups
     bsit = "1503744573087777"
@@ -973,20 +976,30 @@ class FacebookBot(Client):
     def onFriendRequest(self, from_id, msg):
         self.friendConnect(from_id)
         self.sendMessage("Hello! you added me", from_id, thread_type=ThreadType.USER)
+    
+    def searchExistUserLoc(self, id):
+        db = mclient.bot
+        col = db.location
+        res = col.find_one({"id": id})
+        return res
 
     def addloc(self, id, lat, lon):
+        r = self.searchExistUserLoc(id) 
+        db = mclient.bot
+        col = db.location
         try:
-            db = mclient.bot
-            col = db.location
-            r = self.getloc(id)
-            if r['id']:
+            if r['id'] == id:
                 data = {"$set": {"lat": lat, "lon": lon}}
                 col.update_one(r, data)
-        except TypeError:
-            db = mclient.bot
-            col = db.location
+                cls()
+                print('updated!')
+                mclient.close()
+        except:
             data = {"id": id, "lat": lat, "lon": lon}
             col.insert_one(data)
+            cls()
+            print('added!')
+            mclient.close()
 
     def getloc(self, id):
         db = mclient.bot
