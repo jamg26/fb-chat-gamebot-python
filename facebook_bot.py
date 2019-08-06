@@ -1581,6 +1581,9 @@ class FacebookBot(Client):
                                                    "!removebg - remove background from image\n\n"
                                                    "!guessage - guess your age\n\n"
                                                    "!syn - get synonyms\n\n"
+                                                   "!guesswho - guess person\n\n"
+                                                   "!setlocation - set your location\n\n"
+                                                   "!getlocation - get your location\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
