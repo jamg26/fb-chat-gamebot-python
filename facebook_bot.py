@@ -221,8 +221,20 @@ def removebg(path):
                   out.write(response2.content)
                   return p
           else:
-              print("Error:", response2.status_code, response2.text)
-              return 'error'
+            if(response.status_code == 402):
+                response2 = requests.post(
+                'https://api.remove.bg/v1.0/removebg',
+                files={'image_file': open(path, 'rb')},
+                data={'size': 'auto'},
+                headers={'X-Api-Key': 'JZtho2oJ5Nfp29t6nM8W13zS'},
+                )
+                if response2.status_code == requests.codes.ok:
+                    with open(p, 'wb') as out:
+                        out.write(response2.content)
+                        return p
+                else:
+                    print("Error:", response2.status_code, response2.text)
+                    return 'error'
         else:
           print("Error:", response.status_code, response.text)
           return 'error'
@@ -1688,7 +1700,8 @@ def main():
     global session_cookies
     u_user = input('Enter username: ')
     u_pw = getpass.getpass('Enter password: ')
-    client = Client(u_user, u_pw)
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
+    client = Client(u_user, u_pw, user_agent=ua, max_tries=20)
     session_cookies = client.getSession()
     start_bot()
     
