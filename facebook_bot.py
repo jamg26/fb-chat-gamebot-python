@@ -45,6 +45,13 @@ from google.cloud import vision
 from google.cloud.vision import types
 from google.cloud import translate
 
+# speech recognition
+
+from google.cloud import speech
+from google.cloud.speech import enums
+from google.cloud.speech import types
+import subprocess
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "json/YoutubeAPI-8315fef19e56.json"
 
 
@@ -60,6 +67,35 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "json/YoutubeAPI-8315fef19e56.jso
 
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def speechtotext(path):
+    res = "audio/converted.wav"
+    subprocess.call(["ffmpeg", "-y", "-i", path, res])
+
+    client = speech.SpeechClient()
+
+    speech_file = os.path.join(
+        os.path.dirname(__file__),
+        './',
+        res)
+
+
+    with open(speech_file, 'rb') as audio_file:
+        content = audio_file.read()
+        audio = speech.types.RecognitionAudio(content=content)
+
+    config = speech.types.RecognitionConfig(
+        encoding=speech.enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=44100,
+        language_code='en-US',
+        audio_channel_count=1,)
+
+    response = client.recognize(config, audio)
+
+    return response.results[0].alternatives[0].transcript
+
+
 
 # image recognition
 # def get_encoded_faces():
@@ -1073,7 +1109,10 @@ class FacebookBot(Client):
                         url = msg["delta"]["attachments"][0]["mercury"]["blob_attachment"]["large_preview"]["uri"]
                     if "application" in extension:
                         file_type = "%file"
-                except IndexError:
+                    if "audio" in extension:
+                        file_type = "%audio"
+                        url = msg["delta"]["attachments"][0]["mercury"]["blob_attachment"]["playable_url"]
+                except:
                     command = message_object.text.lower()
                 if author_id != self.uid:
                     if file_type == "%text":  # if filetype is text
@@ -1267,7 +1306,7 @@ class FacebookBot(Client):
                             os.remove(path)
                             
                         # speak bot to a group
-                        if "!msgto" in message_object.text:
+                        if "!msgto" in command:
                             try:
                                 data = message_object.text.split()
                                 t = data[1]
@@ -1612,6 +1651,27 @@ class FacebookBot(Client):
                                 self.markAsDelivered(
                                     thread_id, message_object.uid)
                                 self.markAsRead(thread_id)
+                    if file_type == "%audio":
+                        path = "audio/" + thread_id + "_temp.aac"
+                        urllib.request.urlretrieve(url, path)
+                        res = speechtotext(path)
+                        # 
+                        if "hello" in res:
+                            tts = gTTS(text="hi", lang='en')
+                        if "hi" in res:
+                            tts = gTTS(text="hello", lang='en')
+                        if "your name" in res:
+                            tts = gTTS(text="I'm sorry i dont have name yet", lang='en')
+                        if "how are you" in res:
+                            tts = gTTS(text="I'm fine thank you.", lang='en')
+                        if "thank" in res:
+                            tts = gTTS(text="You're welcome.", lang='en')
+                        
+                        path = f"audio/reply.mp3"
+                        tts.save(path)
+                        self.sendLocalFiles(path, "", thread_id, thread_type)
+                        #
+                        #self.send(Message(text=speechtotext(path)), thread_id=thread_id, thread_type=thread_type)
                     if file_type == "%image":
                         path = "image/" + thread_id + "_temp.jpg"
                         urllib.request.urlretrieve(url, path)
