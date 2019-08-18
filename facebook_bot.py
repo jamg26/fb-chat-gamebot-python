@@ -1667,11 +1667,32 @@ class FacebookBot(Client):
                         if "thank" in res:
                             tts = gTTS(text="You're welcome.", lang='en')
                         
+
+                        if "+" in res or "plus" in res:
+                            if "plus" in res:
+                                res = res.replace("plus", "+")
+                            self.send(Message(text=f"{res}=\n{eval(res)}"), thread_id=thread_id, thread_type=thread_type)
+                        if "-" in res or "minus" in res:
+                            if "minus" in res:
+                                res = res.replace("minus", "-")
+                            self.send(Message(text=f"{res}=\n{eval(res)}"), thread_id=thread_id, thread_type=thread_type)
+                        if "/" in res or "divided" in res:
+                            if "divided" in res:
+                                res = res.replace("divided by", "/")
+                            self.send(Message(text=f"{res}=\n{eval(res)}"), thread_id=thread_id, thread_type=thread_type)
+                        if "*" in res or "multiplied" in res:
+                            if "multiplied" in res:
+                                res = res.replace("multiplied by", "*")
+                            self.send(Message(text=f"{res}=\n{eval(res)}"), thread_id=thread_id, thread_type=thread_type)
+
+
                         path = f"audio/reply.mp3"
                         tts.save(path)
                         self.sendLocalFiles(path, "", thread_id, thread_type)
-                        #
-                        #self.send(Message(text=speechtotext(path)), thread_id=thread_id, thread_type=thread_type)
+
+
+                        #self.send(Message(text=res), thread_id=thread_id, thread_type=thread_type)
+
                     if file_type == "%image":
                         path = "image/" + thread_id + "_temp.jpg"
                         urllib.request.urlretrieve(url, path)
