@@ -237,7 +237,7 @@ def removebg(path):
     response = requests.post(
     'https://api.remove.bg/v1.0/removebg',
     files={'image_file': open(path, 'rb')},
-    data={'size': 'auto'},
+    data={'size': 'auto', 'bg_color': 'ffffff'},
     headers={'X-Api-Key': 'tipKyv76Xbda34JRGhicRqnm'},
     )
     if response.status_code == requests.codes.ok:
@@ -249,7 +249,7 @@ def removebg(path):
           response2 = requests.post(
           'https://api.remove.bg/v1.0/removebg',
           files={'image_file': open(path, 'rb')},
-          data={'size': 'auto'},
+          data={'size': 'auto', 'bg_color': 'ffffff'},
           headers={'X-Api-Key': 'vzzrFNN27Whhc4UqE4a3kenv'},
           )
           if response2.status_code == requests.codes.ok:
@@ -261,7 +261,7 @@ def removebg(path):
                 response2 = requests.post(
                 'https://api.remove.bg/v1.0/removebg',
                 files={'image_file': open(path, 'rb')},
-                data={'size': 'auto'},
+                data={'size': 'auto', 'bg_color': 'ffffff'},
                 headers={'X-Api-Key': 'JZtho2oJ5Nfp29t6nM8W13zS'},
                 )
                 if response2.status_code == requests.codes.ok:
