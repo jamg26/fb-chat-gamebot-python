@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from math import *
 import urllib.request
 from urllib.parse import quote
-import mysql.connector
+#import mysql.connector
 import os
 import getpass
 from pythonping import ping
@@ -1349,7 +1349,7 @@ class FacebookBot(Client):
                             img = Image.new('RGB', (150, 30),
                                             color=(255, 255, 255))
                             fnt = ImageFont.truetype(
-                                '/font/Roboto-Regular.ttf', 15)
+                                'font/Roboto-Regular.ttf', 15)
                             d = ImageDraw.Draw(img)
                             d.text((10, 10), data, font=fnt, fill=(0, 0, 0))
                             path = "image/" + thread_id + '.png'
