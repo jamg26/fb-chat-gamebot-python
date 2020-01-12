@@ -373,37 +373,37 @@ def sms3(num, msg):
     r = requests.post(url, data=params)
 
 
-def mysql_update(ind, msgs):
-    sql = f"UPDATE crud SET message = '{msgs}' WHERE message = '{ind}'"
-    my_cursor.execute(sql)
-    my_db.commit()
+# def mysql_update(ind, msgs):
+#     sql = f"UPDATE crud SET message = '{msgs}' WHERE message = '{ind}'"
+#     my_cursor.execute(sql)
+#     my_db.commit()
 
 
-def mysql_delete(msg):
-    if msg == "all":
-        sql = "DELETE FROM crud WHERE id != 0"
-        my_cursor.execute(sql)
-        my_db.commit()
-    else:
-        sql = f"DELETE FROM crud WHERE message = '{msg}'"
-        my_cursor.execute(sql)
-        my_db.commit()
+# def mysql_delete(msg):
+#     if msg == "all":
+#         sql = "DELETE FROM crud WHERE id != 0"
+#         my_cursor.execute(sql)
+#         my_db.commit()
+#     else:
+#         sql = f"DELETE FROM crud WHERE message = '{msg}'"
+#         my_cursor.execute(sql)
+#         my_db.commit()
 
 
-def mysql_add(message):
-    sql = f"INSERT INTO crud (message) VALUES ('{message}')"
-    my_cursor.execute(sql)
-    my_db.commit()
+# def mysql_add(message):
+#     sql = f"INSERT INTO crud (message) VALUES ('{message}')"
+#     my_cursor.execute(sql)
+#     my_db.commit()
 
 
-def mysql_get():
-    my_cursor.execute("SELECT * FROM crud ORDER BY ID ASC")
-    my_result = my_cursor.fetchall()
-    res = []
-    for x in my_result:
-        res.append(x[1])
-    res = "\n".join(res)
-    return res
+# def mysql_get():
+#     my_cursor.execute("SELECT * FROM crud ORDER BY ID ASC")
+#     my_result = my_cursor.fetchall()
+#     res = []
+#     for x in my_result:
+#         res.append(x[1])
+#     res = "\n".join(res)
+#     return res
 
 
 def mac_address(mac):
