@@ -189,47 +189,12 @@ def speechtotext(path):
 def synonyms(word):
     r = requests.get(f"https://api.datamuse.com/words?rel_syn={word}")
     r = r.json()
-    # print(r[0]['word'])
     res = []
     for x in r:
       res.append(x['word'])
-      # print(x['word'])
     res = "\n".join(res)
     return res
 
-
-# def guessage(url):
-#     # 1. Get your API token from https://aiception.com/dashboard
-#     token = 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MjQsInRpbWUiOjE1Nzg4MTU4OTIuMTczODV9.0HUNu8S2zLvUDs8-eE2JAeyUfV5j-cqnctN6IBsB51o'
-
-#     # 2. Let's find the approximate age of Taylor Swift from this image
-#     r = requests.post('https://aiception.com/api/v2.1/face_age',
-#                     auth=(token, 'password is ignored'),
-#                     json={'image_url': url})
-
-#     # 2b. The Response object r has a JSON response
-#     # print('Headers')
-#     # pprint(r.headers)
-
-#     #print('Server response to our POST request')
-#     # pprint(r.json())
-#     # {'Location': 'https://aiception.com/api/v2.1/face_age/12', 'message': 'age task created'}
-
-#     # The Location value is both in the headers and in the json body
-#     age_task_url = r.headers['Location']
-#     # age_task_url = r.json()['Location']  # is also fine
-
-
-#     # wait 2 seconds for aiception to complete the task
-#     time.sleep(2)
-
-#     # 3. Use the Location to get the age task
-#     r = requests.get(age_task_url, auth=(token, 'password is ignored'))
-#     x = r.json()
-#     # 3b. We now have an answer with the age of Taylor Swift
-#     #print('Server response to our GET request')
-#     # pprint(r.json())
-#     return x['answer']['age']
 
 
 def removebg(path):
@@ -371,40 +336,6 @@ def sms3(num, msg):
     params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
               '3': 'TR-KENTJ115195_69819'}
     r = requests.post(url, data=params)
-
-
-# def mysql_update(ind, msgs):
-#     sql = f"UPDATE crud SET message = '{msgs}' WHERE message = '{ind}'"
-#     my_cursor.execute(sql)
-#     my_db.commit()
-
-
-# def mysql_delete(msg):
-#     if msg == "all":
-#         sql = "DELETE FROM crud WHERE id != 0"
-#         my_cursor.execute(sql)
-#         my_db.commit()
-#     else:
-#         sql = f"DELETE FROM crud WHERE message = '{msg}'"
-#         my_cursor.execute(sql)
-#         my_db.commit()
-
-
-# def mysql_add(message):
-#     sql = f"INSERT INTO crud (message) VALUES ('{message}')"
-#     my_cursor.execute(sql)
-#     my_db.commit()
-
-
-# def mysql_get():
-#     my_cursor.execute("SELECT * FROM crud ORDER BY ID ASC")
-#     my_result = my_cursor.fetchall()
-#     res = []
-#     for x in my_result:
-#         res.append(x[1])
-#     res = "\n".join(res)
-#     return res
-
 
 def mac_address(mac):
     url = f"https://api.macaddress.io/v1?apiKey=at_uLSLgGGS1cqXlILgyCPyGC561SLf5&output=json&search={mac}"
@@ -1630,7 +1561,6 @@ class FacebookBot(Client):
                                                    "!image - search image\n\n"
                                                    "!spell - suggest/autocomplete word\n\n"
                                                    "!removebg - remove background from image\n\n"
-                                                   #"!guessage - guess your age\n\n"
                                                    "!syn - get synonyms\n\n"
                                                    #"!guesswho - guess person\n\n"
                                                    "!setlocation - set your location\n\n"
@@ -1691,10 +1621,6 @@ class FacebookBot(Client):
                         tts.save(path)
                         self.sendLocalFiles(path, "", thread_id, thread_type)
 
-                        #self.send(Message(text=res), thread_id=thread_id, thread_type=thread_type)
-
-                        #self.send(Message(text=res), thread_id=thread_id, thread_type=thread_type)
-
                     if file_type == "%image":
                         path = "image/" + thread_id + "_temp.jpg"
                         urllib.request.urlretrieve(url, path)
@@ -1715,14 +1641,7 @@ class FacebookBot(Client):
                                 self.send(Message(text=f"!removebg to process another image."), thread_id=thread_id, thread_type=thread_type)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
-                        # if self.guessage == 1:
-                        #     try:
-                        #         self.guessage = 0
-                        #         self.send(Message(text=f"predicted age: {guessage(url)}"), thread_id=thread_id, thread_type=thread_type)
-                        #         self.send(Message(text=f"!guessage to process another image."), thread_id=thread_id, thread_type=thread_type)
-                        #     except:
-                        #         self.reactToMessage(message_object.uid, MessageReaction.NO)
-
+                                
                         # if self.recognition == 1:
                         #     try:
                         #         self.recognition = 0
