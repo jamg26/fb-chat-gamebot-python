@@ -1131,12 +1131,12 @@ class FacebookBot(Client):
                             self.sendRemoteImage(url, message=Message(text='Random image for you'), thread_id=thread_id,
                                                  thread_type=thread_type)
                         # when name called
-                        if "batibot" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            reply = ["Unsa man ?", "oh?", "seg tawag", "hello"]
-                            self.send(Message(text=random.choice(reply)),
-                                      thread_id=thread_id, thread_type=thread_type)
+                        # if "batibot" in command:
+                        #     self.reactToMessage(
+                        #         message_object.uid, MessageReaction.YES)
+                        #     reply = ["Unsa man ?", "oh?", "seg tawag", "hello"]
+                        #     self.send(Message(text=random.choice(reply)),
+                        #               thread_id=thread_id, thread_type=thread_type)
                         # facebook messenger functions
                         #  change group title
                         if "!title" in command:
@@ -1164,6 +1164,7 @@ class FacebookBot(Client):
                                     message_object.uid, MessageReaction.YES)
                                 self.send(Message(text=f"uid: {user.uid}\nname: {user.name}\nprofile: https://facebook.com/{user.uid}"), thread_id=thread_id,
                                           thread_type=thread_type)
+                                self.sendRemoteImage(user.photo, message=None, thread_id=thread_id, thread_type=thread_type)
                             except IndexError:
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.NO)
@@ -1210,7 +1211,7 @@ class FacebookBot(Client):
                                       thread_id=thread_id, thread_type=thread_type)
                             self.send(Message(text="Created by: Jamuel Galicia"),
                                       thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="Last Update: Jan 12, 2020"),
+                            self.send(Message(text="Last Update: Feb 13, 2020"),
                                       thread_id=thread_id, thread_type=thread_type)
                         # pause bot
                         if "!pause" in command:
@@ -1693,7 +1694,6 @@ def start_bot():
     fb_bot = FacebookBot("", "", session_cookies=session_cookies)
     game_bot = GameBot("", "",  session_cookies=session_cookies)
     bad_bot = BadBot("", "", session_cookies=session_cookies)
-    
     fb_bot.listen()
 
 
@@ -1702,7 +1702,7 @@ def main():
     global client
     global session_cookies
     u_user = "jammy.jammy.9404362" #input('Enter username: ')
-    u_pw = "jamuel26" #getpass.getpass('Enter password: ')
+    u_pw = "jamuel1" #getpass.getpass('Enter password: ')
     ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
     client = Client(u_user, u_pw, user_agent=ua, max_tries=20)
     session_cookies = client.getSession()
