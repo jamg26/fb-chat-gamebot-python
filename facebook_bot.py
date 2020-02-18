@@ -1551,7 +1551,7 @@ class FacebookBot(Client):
                                 response = requests.request("POST", url, data=payload, headers=headers)
                                 res = response.json()
                                 
-                                self.send(Message(text=f"{res["NewText"]}"), thread_id=thread_id, thread_type=thread_type)
+                                self.send(Message(text=f"{res['NewText']}"), thread_id=thread_id, thread_type=thread_type)
                                 self.reactToMessage(message_object.uid, MessageReaction.YES)
                             except:
                                 self.reactToMessage(message_object.uid, MessageReaction.NO)
