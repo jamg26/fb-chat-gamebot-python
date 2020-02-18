@@ -1587,6 +1587,7 @@ class FacebookBot(Client):
                                                    #"!guesswho - guess person\n\n"
                                                    "!setlocation - set your location\n\n"
                                                    "!getlocation - get your location\n\n"
+                                                   "!unplag - unplagiarized text\n\n"
                                                    "!about"),
                                       thread_id=thread_id,
                                       thread_type=thread_type)
