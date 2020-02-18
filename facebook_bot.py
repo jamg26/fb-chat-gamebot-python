@@ -1533,7 +1533,28 @@ class FacebookBot(Client):
                             except TypeError:
                                 self.send(Message(text=f"No location info"), thread_id=thread_id, thread_type=thread_type)
                                 self.send(Message(text=f"!setlocation to add"), thread_id=thread_id, thread_type=thread_type)
+                        
+                        if "!unplag" in command:
+                            try:
+                                word = command.split()
+                                word = " ".join(word[1:])
+                                url = "https://plagiarism-remover.p.rapidapi.com/api/rewrite"
 
+                                payload = "{  \"sourceText\": \"" + word + "\"}"
+                                headers = {
+                                'x-rapidapi-host': "plagiarism-remover.p.rapidapi.com",
+                                'x-rapidapi-key': "fKF1gF6A8Hmshio5bYJ0MWDnKgRXp1HFSX7jsnmPs7rhcgCPmb",
+                                'content-type': "application/json",
+                                'accept': "application/json"
+                                }
+
+                                response = requests.request("POST", url, data=payload, headers=headers)
+                                res = response.json()
+                                
+                                self.send(Message(text=f"{res["NewText"]}"), thread_id=thread_id, thread_type=thread_type)
+                                self.reactToMessage(message_object.uid, MessageReaction.YES)
+                            except:
+                                self.reactToMessage(message_object.uid, MessageReaction.NO)
                         # show commands
                         if "!commands" == command:
                             self.reactToMessage(
@@ -1702,7 +1723,7 @@ def main():
     global client
     global session_cookies
     u_user = "jammy.jammy.9404362" #input('Enter username: ')
-    u_pw = "jamuel1" #getpass.getpass('Enter password: ')
+    u_pw = "jamgbot2" #getpass.getpass('Enter password: ')
     ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
     client = Client(u_user, u_pw, user_agent=ua, max_tries=20)
     session_cookies = client.getSession()
