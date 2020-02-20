@@ -34,6 +34,8 @@ from pythonping import ping
 # import base64
 import wikipedia
 import lyricsgenius
+# ==== MY OWN ORGANIZED FUNCTION ====
+from fb_normal.define import *
 
 
 # face recognition
@@ -1105,35 +1107,37 @@ class FacebookBot(Client):
                                 self.mirror = 0
                         # defining words
                         if "!define" in command:
-                            defined = message_object.text.split()
-                            try:
-                                if defined[2]:
-                                    self.send(Message(text="You can only define 1 word"),
-                                              thread_id=thread_id, thread_type=thread_type)
-                            except IndexError:
-                                try:
-                                    d = define(defined[1])
-                                    if d == "Invalid word":
-                                        self.reactToMessage(
-                                            message_object.uid, MessageReaction.NO)
-                                    else:
-                                        if d != "No data":
-                                            self.reactToMessage(
-                                                message_object.uid, MessageReaction.YES)
-                                            self.send(
-                                                Message(text=d), thread_id=thread_id, thread_type=thread_type)
-                                        else:
-                                            res = suggestquery(defined[1])
-                                            if defined[1] != res:
-                                                self.send(
-                                                    Message(text=f"did you mean...\n{res}"), thread_id=thread_id, thread_type=thread_type)
-                                            else:
-                                                self.reactToMessage(
-                                                    message_object.uid, MessageReaction.NO)
-                                except IndexError:
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.NO)
-                        # upload random images
+                            result = Define(message_object.text).get()
+                            self.send(Message(text=result), thread_id=thread_id, thread_type=thread_type)
+                            # defined = message_object.text.split()
+                            # try:
+                            #     if defined[2]:
+                            #         self.send(Message(text="You can only define 1 word"),
+                            #                   thread_id=thread_id, thread_type=thread_type)
+                            # except IndexError:
+                            #     try:
+                            #         d = define(defined[1])
+                            #         if d == "Invalid word":
+                            #             self.reactToMessage(
+                            #                 message_object.uid, MessageReaction.NO)
+                            #         else:
+                            #             if d != "No data":
+                            #                 self.reactToMessage(
+                            #                     message_object.uid, MessageReaction.YES)
+                            #                 self.send(
+                            #                     Message(text=d), thread_id=thread_id, thread_type=thread_type)
+                            #             else:
+                            #                 res = suggestquery(defined[1])
+                            #                 if defined[1] != res:
+                            #                     self.send(
+                            #                         Message(text=f"did you mean...\n{res}"), thread_id=thread_id, thread_type=thread_type)
+                            #                 else:
+                            #                     self.reactToMessage(
+                            #                         message_object.uid, MessageReaction.NO)
+                            #     except IndexError:
+                            #         self.reactToMessage(
+                            #             message_object.uid, MessageReaction.NO)
+                            # upload random images
                         if "!random image" in command:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.YES)
@@ -1205,7 +1209,8 @@ class FacebookBot(Client):
                                     "8A2IemTA_-goTU98-UqjCGHaZCyEMkciN2NPn8DHfMKbmq0t9ilA-ekMlnnfWGR2")
                                 try:
                                     lyrics = lyrics.split(',')
-                                    song = genius.search_song(lyrics[0], lyrics[1])
+                                    song = genius.search_song(
+                                        lyrics[0], lyrics[1])
                                 except:
                                     song = genius.search_song(lyrics[0])
                                 #fetch = lyricwikia.get_lyrics(lyrics[0], lyrics[1])
