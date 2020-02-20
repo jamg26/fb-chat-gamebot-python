@@ -12,3 +12,4 @@ lyricwikia
 pillow
 pymongo
 wikipedia
+lyricsgenius

@@ -1201,10 +1201,13 @@ class FacebookBot(Client):
                             try:
                                 lyrics = message_object.text.split()
                                 lyrics = " ".join(lyrics[1:])
-                                lyrics = lyrics.split(',')
                                 genius = lyricsgenius.Genius(
                                     "8A2IemTA_-goTU98-UqjCGHaZCyEMkciN2NPn8DHfMKbmq0t9ilA-ekMlnnfWGR2")
-                                song = genius.search_song(lyrics[0], lyrics[1])
+                                try:
+                                    lyrics = lyrics.split(',')
+                                    song = genius.search_song(lyrics[0], lyrics[1])
+                                except:
+                                    song = genius.search_song(lyrics[0])
                                 #fetch = lyricwikia.get_lyrics(lyrics[0], lyrics[1])
                                 self.send(
                                     Message(text=song.lyrics), thread_id=thread_id, thread_type=thread_type)
