@@ -33,6 +33,8 @@ from pythonping import ping
 # from pprint import pprint
 # import base64
 import wikipedia
+import lyricsgenius
+
 
 # face recognition
 # import face_recognition as fr
@@ -1200,18 +1202,20 @@ class FacebookBot(Client):
                                 lyrics = message_object.text.split()
                                 lyrics = " ".join(lyrics[1:])
                                 lyrics = lyrics.split(',')
-                                fetch = lyricwikia.get_lyrics(
-                                    lyrics[0], lyrics[1])
+                                genius = lyricsgenius.Genius(
+                                    "8A2IemTA_-goTU98-UqjCGHaZCyEMkciN2NPn8DHfMKbmq0t9ilA-ekMlnnfWGR2")
+                                song = genius.search_song(lyrics[0], lyrics[1])
+                                #fetch = lyricwikia.get_lyrics(lyrics[0], lyrics[1])
+                                self.send(
+                                    Message(text=song.lyrics), thread_id=thread_id, thread_type=thread_type)
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text=fetch), thread_id=thread_id, thread_type=thread_type)
-                            except IndexError:
+                            except:
                                 self.reactToMessage(
                                     message_object.uid, MessageReaction.NO)
-                            except LyricsNotFound:
-                                self.send(Message(text="Lyrics not found"), thread_id=thread_id,
-                                          thread_type=thread_type)
+                            # except LyricsNotFound:
+                            #     self.send(Message(text="Lyrics not found"), thread_id=thread_id,
+                            #               thread_type=thread_type)
                         # about bot
                         if "!about" in command:
                             self.reactToMessage(
