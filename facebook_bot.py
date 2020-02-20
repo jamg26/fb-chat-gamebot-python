@@ -1,43 +1,41 @@
 import subprocess
-from google.cloud.speech import types
-from google.cloud.speech import enums
+# from google.cloud.speech import types
+# from google.cloud.speech import enums
 from google.cloud import speech
 from google.cloud import translate
-from google.cloud.vision import types
-from google.cloud import vision
-import sys
-import re
+# from google.cloud.vision import types
+# from google.cloud import vision
+# import sys
+# import re
 import io
-import argparse
-import fbchat
+# import argparse
+# import fbchat
 import requests
 import random
 from time import sleep
 from random import shuffle
 from fbchat import Client
-from fbchat.models import *
+# from fbchat.models import *
 import lyricwikia
 from lyricwikia import LyricsNotFound
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
-from math import *
+# from math import *
 import urllib.request
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urlparse import quote
-#from urllib.parse import quote
-#import mysql.connector
+# from urllib.parse import quote
+
+# from urllib.parse import quote
+# import mysql.connector
 import os
-import getpass
+# import getpass
 from pythonping import ping
-import time
-from pprint import pprint
-import base64
+# import time
+# from pprint import pprint
+# import base64
 import wikipedia
 
 # face recognition
-#import face_recognition as fr
+# import face_recognition as fr
 # import os
 # import cv2
 # import face_recognition
@@ -56,7 +54,6 @@ mclient = pymongo.MongoClient(
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "json/YoutubeAPI-8315fef19e56.json"
-
 
 # my_db = mysql.connector.connect(
 #     host="35.187.240.251",
@@ -293,7 +290,7 @@ def detect_text(path):
     response = client.document_text_detection(image=image)
 
     texts = response.text_annotations
-    return response.text_annotations[0].description
+    return texts[0].description
 
 
 def vtotal(urls):
@@ -326,21 +323,21 @@ def sms(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
     params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\njamgph.com',
               '3': 'TR-JAMGP590720_ZDT9Y'}
-    r = requests.post(url, data=params, verify=False)
+    requests.post(url, data=params, verify=False)
 
 
 def sms2(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
     params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
               '3': 'TR-JACDC373780_PFEYY'}
-    r = requests.post(url, data=params)
+    requests.post(url, data=params)
 
 
 def sms3(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
     params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
               '3': 'TR-KENTJ115195_69819'}
-    r = requests.post(url, data=params)
+    requests.post(url, data=params)
 
 
 def mac_address(mac):

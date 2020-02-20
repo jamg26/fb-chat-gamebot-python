@@ -11,3 +11,4 @@ gtts
 lyricwikia
 pillow
 pymongo
+wikipedia
