@@ -15,12 +15,12 @@ import random
 from time import sleep
 from random import shuffle
 from fbchat import Client
-# from fbchat.models import *
+from fbchat.models import *
 import lyricwikia
 from lyricwikia import LyricsNotFound
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
-# from math import *
+from math import *
 import urllib.request
 # from urllib.parse import quote
 
