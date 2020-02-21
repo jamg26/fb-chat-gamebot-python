@@ -1086,10 +1086,9 @@ class FacebookBot(Client):
                         if "!meme" in command:
                             if "#" in command:
                                 try:
-                                    data = command.split('#')
-                                    t_id = data.split('#')[0].split()[1]
-                                    msg1 = data.split('#')[1]
-                                    msg2 = data.split('#')[2]
+                                    t_id = command.split('#')[0].split()[1]
+                                    msg1 = command.split('#')[1]
+                                    msg2 = command.split('#')[2]
                                     img = Meme(t_id, msg1, msg2).make()
                                     self.sendRemoteImage(img, message=Message(text=''), thread_id=thread_id,
                                                         thread_type=thread_type)
