@@ -36,6 +36,7 @@ import wikipedia
 import lyricsgenius
 # ==== MY OWN ORGANIZED FUNCTION ====
 from fb_normal.define import *
+from fb_normal.meme import *
 
 
 # face recognition
@@ -314,13 +315,6 @@ def vtotal(urls):
                              params=params, headers=headers)
     json_response = response.json()
     return f"detected {json_response['positives']} out of {json_response['total']} viruses."
-
-
-def meme(t_id, text0, text1):
-    r = requests.post("https://api.imgflip.com/caption_image", data={
-                      'template_id': t_id, 'username': 'jamg', 'password': 'jamuel26', 'text0': text0, 'text1': text1})
-    r = r.json()
-    return r["data"]["url"]
 
 
 def sms(num, msg):
@@ -938,10 +932,12 @@ class FacebookBot(Client):
     admin_uid = "100005766793253"
     bot_name = "!bot start"
     game = 0
+    object_uid = ""
+    thread_id = ""
 
     vision = 0
     removebg = 0
-    #guessage = 0
+    # guessage = 0
     recognition = 0
     recognition_rename = 0
     guesswho = 0
@@ -1013,8 +1009,8 @@ class FacebookBot(Client):
 
     def onLiveLocation(self, mid, location, author_id, thread_id, thread_type, ts, msg):
         # cls()
-        #self.sendMessage(f"{location}", thread_id, thread_type=ThreadType.GROUP)
-        #print(location.latitude, location.longitude)
+        # self.sendMessage(f"{location}", thread_id, thread_type=ThreadType.GROUP)
+        # print(location.latitude, location.longitude)
         if self.location == 1:
             self.location = 0
             if location.latitude != None:
@@ -1023,6 +1019,16 @@ class FacebookBot(Client):
                                  thread_id, thread_type=thread_type)
                 self.sendMessage("!getlocation to verify",
                                  thread_id, thread_type=thread_type)
+
+    def react(self, react):
+        if react == "yes":
+            self.reactToMessage(self.object_uid, MessageReaction.YES)
+        if react == "no":
+            self.reactToMessage(self.object_uid, MessageReaction.NO)
+
+    def msg(self, msg):
+        self.send(Message(text=f"{msg}"),
+                  thread_id=self.thread_id, thread_type=self.thread_type)
 
     def onMessage(self, author_id, message_object, thread_id, thread_type, metadata, msg, **kwargs):
         if self.bot == 0:  # read if bot = 0
@@ -1034,6 +1040,8 @@ class FacebookBot(Client):
                 self.bot = 1
                 message_object.text = ""
         if self.bot == 1:  # read if bot = 1
+            self.object_uid = message_object.uid
+            self.thread_id = thread_id
             if thread_type == self.thread_type:  # if thread is group
                 file_type = "%text"
                 command = ""
@@ -1057,40 +1065,37 @@ class FacebookBot(Client):
                             self.recognition_rename = 0
                             os.rename(f"faces/{thread_id}.jpg",
                                       f"faces/{command}.jpg")
-                            self.send(Message(text=f"{command}'s image has been added."),
-                                      thread_id=thread_id, thread_type=thread_type)
+                            self.msg(f"{command}'s image has been added.")
+                            self.react('yes')
                         # provide random quotes
-                        if "!meme help" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text=f"type\n!meme id#text1#text2\n!meme id - list of all id"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                        if "!meme id" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
+                        if "!meme help" == command:
+                            self.msg(
+                                f"type\n!meme id#text1#text2\n!meme id - list of all id")
+                            self.react('yes')
+                        if "!meme id" == command:
                             r = requests.get(
                                 "https://api.imgflip.com/get_memes")
-                            tips = []
+                            ids = []
                             res = r.json()
                             for x in res["data"]["memes"]:
-                                tips.append(f"{x['id']} - {x['url']}")
-                            tips = "\n".join(tips)
-                            self.send(Message(text=tips),
-                                      thread_id=thread_id, thread_type=thread_type)
+                                ids.append(f"{x['id']} - {x['url']}")
+                            ids = "\n".join(ids)
+                            self.msg(ids)
+                            self.react('yes')
+
                         if "!meme" in command:
-                            try:
-                                data = command.split('#')
-                                text0 = data[1]
-                                text1 = data[2]
-                                data = data[0].split()
-                                t_id = data[1]
-                                img = meme(t_id, text0, text1)
-                                self.sendRemoteImage(img, message=Message(text=''), thread_id=thread_id,
-                                                     thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                            except IndexError:
-                                print("Index Error in !meme")
+                            if "#" in command:
+                                try:
+                                    data = command.split('#')
+                                    t_id = data.split('#')[0].split()[1]
+                                    msg1 = data.split('#')[1]
+                                    msg2 = data.split('#')[2]
+                                    img = Meme(t_id, msg1, msg2).make()
+                                    self.sendRemoteImage(img, message=Message(text=''), thread_id=thread_id,
+                                                        thread_type=thread_type)
+                                    self.react('yes')
+                                except:
+                                    self.msg("Invalid id or parameters.")
                         if "!mirror on" in command:
                             if self.admin_uid == author_id:
                                 self.reactToMessage(
@@ -1108,35 +1113,9 @@ class FacebookBot(Client):
                         # defining words
                         if "!define" in command:
                             result = Define(message_object.text).get()
-                            self.send(Message(text=result), thread_id=thread_id, thread_type=thread_type)
-                            # defined = message_object.text.split()
-                            # try:
-                            #     if defined[2]:
-                            #         self.send(Message(text="You can only define 1 word"),
-                            #                   thread_id=thread_id, thread_type=thread_type)
-                            # except IndexError:
-                            #     try:
-                            #         d = define(defined[1])
-                            #         if d == "Invalid word":
-                            #             self.reactToMessage(
-                            #                 message_object.uid, MessageReaction.NO)
-                            #         else:
-                            #             if d != "No data":
-                            #                 self.reactToMessage(
-                            #                     message_object.uid, MessageReaction.YES)
-                            #                 self.send(
-                            #                     Message(text=d), thread_id=thread_id, thread_type=thread_type)
-                            #             else:
-                            #                 res = suggestquery(defined[1])
-                            #                 if defined[1] != res:
-                            #                     self.send(
-                            #                         Message(text=f"did you mean...\n{res}"), thread_id=thread_id, thread_type=thread_type)
-                            #                 else:
-                            #                     self.reactToMessage(
-                            #                         message_object.uid, MessageReaction.NO)
-                            #     except IndexError:
-                            #         self.reactToMessage(
-                            #             message_object.uid, MessageReaction.NO)
+                            self.send(Message(text=result),
+                                      thread_id=thread_id, thread_type=thread_type)
+
                             # upload random images
                         if "!random image" in command:
                             self.reactToMessage(
@@ -1144,14 +1123,7 @@ class FacebookBot(Client):
                             url = "https://source.unsplash.com/random"
                             self.sendRemoteImage(url, message=Message(text='Random image for you'), thread_id=thread_id,
                                                  thread_type=thread_type)
-                        # when name called
-                        # if "batibot" in command:
-                        #     self.reactToMessage(
-                        #         message_object.uid, MessageReaction.YES)
-                        #     reply = ["Unsa man ?", "oh?", "seg tawag", "hello"]
-                        #     self.send(Message(text=random.choice(reply)),
-                        #               thread_id=thread_id, thread_type=thread_type)
-                        # facebook messenger functions
+
                         #  change group title
                         if "!title" in command:
                             self.reactToMessage(
@@ -1213,7 +1185,7 @@ class FacebookBot(Client):
                                         lyrics[0], lyrics[1])
                                 except:
                                     song = genius.search_song(lyrics[0])
-                                #fetch = lyricwikia.get_lyrics(lyrics[0], lyrics[1])
+                                # fetch = lyricwikia.get_lyrics(lyrics[0], lyrics[1])
                                 self.send(
                                     Message(text=song.lyrics), thread_id=thread_id, thread_type=thread_type)
                                 self.reactToMessage(
@@ -1657,7 +1629,7 @@ class FacebookBot(Client):
                                                    "!spell - suggest/autocomplete word\n\n"
                                                    "!removebg - remove background from image\n\n"
                                                    "!syn - get synonyms\n\n"
-                                                   #"!guesswho - guess person\n\n"
+                                                   # "!guesswho - guess person\n\n"
                                                    "!setlocation - set your location\n\n"
                                                    "!getlocation - get your location\n\n"
                                                    "!unplag - unplagiarized text\n\n"
