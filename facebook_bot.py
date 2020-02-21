@@ -319,23 +319,9 @@ def vtotal(urls):
 
 def sms(num, msg):
     url = 'https://www.itexmo.com/php_api/api.php'
-    params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\njamgph.com',
-              '3': 'TR-JAMGP590720_ZDT9Y'}
+    params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
+              '3': 'TR-JAMUE321619_FPVNQ'}
     requests.post(url, data=params, verify=False)
-
-
-def sms2(num, msg):
-    url = 'https://www.itexmo.com/php_api/api.php'
-    params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
-              '3': 'TR-JACDC373780_PFEYY'}
-    requests.post(url, data=params)
-
-
-def sms3(num, msg):
-    url = 'https://www.itexmo.com/php_api/api.php'
-    params = {'1': num, '2': f'{msg}\n\n\n\n\n\n\n',
-              '3': 'TR-KENTJ115195_69819'}
-    requests.post(url, data=params)
 
 
 def mac_address(mac):
@@ -837,8 +823,7 @@ class GameBot(Client):
                     if self.game_tt_check == 1:
                         try:
                             self.shuffle()
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
+                            self.react('yes')
                         except NameError:
                             self.reactToMessage(
                                 message_object.uid, MessageReaction.NO)
@@ -863,8 +848,7 @@ class GameBot(Client):
                             if author_id in self.users[x][0]:
                                 join = 1
                         if join == 0:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
+                            self.react('yes')
                             self.join_user(author_id, name)
                             self.send(Message(text=f"{name} joined."),
                                       thread_id=thread_id, thread_type=thread_type)
@@ -1025,6 +1009,8 @@ class FacebookBot(Client):
             self.reactToMessage(self.object_uid, MessageReaction.YES)
         if react == "no":
             self.reactToMessage(self.object_uid, MessageReaction.NO)
+        if react == "love":
+            self.reactToMessage(message_object.uid, MessageReaction.LOVE)
 
     def msg(self, msg):
         self.send(Message(text=f"{msg}"),
@@ -1034,7 +1020,7 @@ class FacebookBot(Client):
         if self.bot == 0:  # read if bot = 0
             if "!start" in message_object.text:  # if bot = 0 !start to make it 1
                 self.markAsRead(thread_id)
-                self.reactToMessage(message_object.uid, MessageReaction.LOVE)
+                self.react('love')
                 self.send(Message(text="Bot started!"),
                           thread_id=thread_id, thread_type=thread_type)
                 self.bot = 1
@@ -1067,11 +1053,13 @@ class FacebookBot(Client):
                                       f"faces/{command}.jpg")
                             self.msg(f"{command}'s image has been added.")
                             self.react('yes')
+
                         # provide random quotes
                         if "!meme help" == command:
                             self.msg(
                                 f"type\n!meme id#text1#text2\n!meme id - list of all id")
                             self.react('yes')
+
                         if "!meme id" == command:
                             r = requests.get(
                                 "https://api.imgflip.com/get_memes")
@@ -1091,86 +1079,75 @@ class FacebookBot(Client):
                                     msg2 = command.split('#')[2]
                                     img = Meme(t_id, msg1, msg2).make()
                                     self.sendRemoteImage(img, message=Message(text=''), thread_id=thread_id,
-                                                        thread_type=thread_type)
+                                                         thread_type=thread_type)
                                     self.react('yes')
                                 except:
                                     self.msg("Invalid id or parameters.")
+
                         if "!mirror on" in command:
                             if self.admin_uid == author_id:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="Mirror bot on!"),
-                                          thread_id=thread_id, thread_type=thread_type)
                                 self.mirror = 1
+                                self.react('yes')
+                                self.msg("Mirror bot on.")
+
                         if "!mirror off" in command:
                             if self.admin_uid == author_id:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="Mirror bot off!"),
-                                          thread_id=thread_id, thread_type=thread_type)
                                 self.mirror = 0
+                                self.react('yes')
+                                self.msg("Mirror bot off.")
+
                         # defining words
                         if "!define" in command:
                             result = Define(message_object.text).get()
-                            self.send(Message(text=result),
-                                      thread_id=thread_id, thread_type=thread_type)
+                            self.msg(result)
+                            self.react('yes')
 
-                            # upload random images
+                        # upload random images
                         if "!random image" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
                             url = "https://source.unsplash.com/random"
-                            self.sendRemoteImage(url, message=Message(text='Random image for you'), thread_id=thread_id,
+                            self.sendRemoteImage(url, message=Message(text=''), thread_id=thread_id,
                                                  thread_type=thread_type)
+                            self.react('yes')
 
                         #  change group title
                         if "!title" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
                             title = message_object.text.split()
                             tit = " ".join(title[1:])
                             self.changeThreadTitle(
                                 tit, thread_id=thread_id, thread_type=thread_type)
+                            self.react('yes')
+
                         # change users nickname
                         if "!nickname" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
                             nickname = message_object.text.split()
                             nick = " ".join(nickname[1:])
                             self.changeNickname(
                                 nick, author_id, thread_id=thread_id, thread_type=thread_type)
+                            self.react('yes')
+
                         # search facebook
                         if "!search" in command:
                             try:
                                 search = message_object.text.split()
                                 searching = " ".join(search[1:])
                                 user = self.searchForUsers(searching)[0]
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=f"uid: {user.uid}\nname: {user.name}\nprofile: https://facebook.com/{user.uid}"), thread_id=thread_id,
-                                          thread_type=thread_type)
+                                self.msg(
+                                    f"uid: {user.uid}\nname: {user.name}\nprofile: https://facebook.com/{user.uid}")
                                 self.sendRemoteImage(
                                     user.photo, message=None, thread_id=thread_id, thread_type=thread_type)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('yes')
+                            except:
+                                self.react('no')
+
                         if "!mod" in command:
                             try:
                                 modulo = message_object.text.split()
                                 mod = float(modulo[1]) % float(modulo[2])
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text=mod), thread_id=thread_id, thread_type=thread_type)
-                            except FBchatFacebookError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.msg(mod)
+                                self.react('yes')
+                            except:
+                                self.react('no')
+
                         # search lyrics
                         if "!lyrics" in command:
                             try:
@@ -1184,42 +1161,30 @@ class FacebookBot(Client):
                                         lyrics[0], lyrics[1])
                                 except:
                                     song = genius.search_song(lyrics[0])
-                                # fetch = lyricwikia.get_lyrics(lyrics[0], lyrics[1])
-                                self.send(
-                                    Message(text=song.lyrics), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.msg(song.lyrics)
+                                self.react('yes')
                             except:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            # except LyricsNotFound:
-                            #     self.send(Message(text="Lyrics not found"), thread_id=thread_id,
-                            #               thread_type=thread_type)
+                                self.react('no')
+
                         # about bot
                         if "!about" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Virtual assistant for Facebook"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="Created by: Jamuel Galicia"),
-                                      thread_id=thread_id, thread_type=thread_type)
-                            self.send(Message(text="Last Update: Feb 20, 2020"),
-                                      thread_id=thread_id, thread_type=thread_type)
+                            self.msg("Virtual assistant for Facebook")
+                            self.msg("Created by: Jamuel Galicia")
+                            self.msg("Last Update: Feb 2020")
+                            self.react('yes')
+
                         # pause bot
                         if "!pause" in command:
                             if author_id == self.admin_uid:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(
-                                    Message(text="Bot paused!"), thread_id=thread_id, thread_type=thread_type)
+                                self.msg("Bot paused.")
                                 self.bot = 0
+                                self.react('yes')
                             else:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
+
                         # speak bot
                         if "!speak" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
+                            self.react('yes')
                             data = message_object.text.split()
                             voice = " ".join(data[1:])
                             tts = gTTS(text=voice, lang='en')
@@ -1241,33 +1206,26 @@ class FacebookBot(Client):
                                 self.sendLocalFiles(
                                     path, "", t, thread_type)
                                 os.remove(path)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.react('yes')
                             except:
                                 self.sendLocalFiles(
                                     path, "", t, ThreadType.USER)
                                 os.remove(path)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.react('yes')
 
                         # find network
                         if "!network" in command:
                             com = command.split()
                             try:
-                                self.send(Message(text=mobile_prefixes(com[1])), thread_id=thread_id,
-                                          thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.msg(mobile_prefixes(com[1]))
+                                self.react('yes')
                             except FBchatFacebookError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
                             except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
+
                         # converting image to text
                         if "!write" in command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
                             text = message_object.text.split()
                             data = " ".join(text[1:])
                             img = Image.new('RGB', (150, 30),
@@ -1281,38 +1239,37 @@ class FacebookBot(Client):
                             self.sendLocalImage(path, message=Message(text=''), thread_id=thread_id,
                                                 thread_type=thread_type)
                             os.remove(path)
+                            self.react('yes')
+
                         # getting mac's provider
                         if "!mac" in command:
                             try:
                                 com = command.split()
                                 data = mac_address(com[1])
                                 if data["vendorDetails"]["companyName"] != "":
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.YES)
-                                    self.send(Message(text="VENDOR DETAILS\n\n"
-                                                           "Company Name: \n" + data["vendorDetails"]["companyName"] +
-                                                           "\n\nCompany Address: \n" +
-                                                           data["vendorDetails"]["companyAddress"] +
-                                                           "\n\nCountry Code: \n" +
-                                                           data["vendorDetails"]["countryCode"]),
-                                              thread_id=thread_id, thread_type=thread_type)
+                                    self.msg("VENDOR DETAILS\n\n"
+                                             "Company Name: \n" + data["vendorDetails"]["companyName"] +
+                                             "\n\nCompany Address: \n" +
+                                             data["vendorDetails"]["companyAddress"] +
+                                             "\n\nCountry Code: \n" +
+                                             data["vendorDetails"]["countryCode"])
+                                    self.react('yes')
                                 else:
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.NO)
+                                    self.react('no')
                             except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
+
                         # conver url to qrcode
                         if "!qr" in command:
                             com = command.split()
                             base = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={com[1]}"
                             path = "image/" + thread_id + ".jpg"
                             urllib.request.urlretrieve(base, path)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
                             self.sendLocalImage(path, message=Message(text=''), thread_id=thread_id,
                                                 thread_type=thread_type)
                             os.remove(path)
+                            self.react('yes')
+
                         # forwarding attachment
                         if "!forward" in command:
                             split = command.split()
@@ -1320,11 +1277,9 @@ class FacebookBot(Client):
                             try:
                                 self.sendRemoteFiles(
                                     url, message=None, thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.react('yes')
                             except FBchatFacebookError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
 
                         # sending sms
                         if "!sms" in command:
@@ -1332,138 +1287,104 @@ class FacebookBot(Client):
                             message = " ".join(msg[2:])
                             number = msg[1]
                             sms(number, message)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="Message sent!"),
-                                      thread_id=thread_id, thread_type=thread_type)
+                            self.msg('Message sent.')
+                            self.react('yes')
+
                         if "!game on" in command:
                             if author_id == self.admin_uid:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.react('yes')
                                 GameBot.users = {}
                                 GameBot.thread_id = thread_id
                                 game_bot.listen()
+
                         if "!bad on" in command:
                             if author_id == self.admin_uid:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.react('yes')
                                 BadBot.thread_id = thread_id
                                 bad_bot.listen()
+
                         if "!bin" in command:
                             try:
                                 b = command.split()
                                 r = int(b[1])
                                 r = bin(r)
                                 r = r.replace("0b", "")
-                                self.send(
-                                    Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.msg(r)
+                                self.react('yes')
+                            except:
+                                self.react('no')
+
                         if "!hex" in command:
                             try:
                                 b = command.split()
                                 r = int(b[1])
                                 r = hex(r)
                                 r = r.replace("0x", "")
-                                self.send(
-                                    Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.msg(r)
+                                self.react('yes')
+                            except:
+                                self.react('no')
+
                         if "!oct" in command:
                             try:
                                 b = command.split()
                                 r = int(b[1])
                                 r = oct(r)
                                 r = r.replace("0o", "")
-                                self.send(
-                                    Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.msg(r)
+                                self.react('yes')
+                            except:
+                                self.react('no')
+
                         if "!sqrt" in command:
                             try:
                                 b = command.split()
                                 r = float(b[1])
                                 r = sqrt(r)
-                                self.send(
-                                    Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                            except ValueError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.msg(r)
+                                self.react('yes')
+                            except:
+                                self.react('no')
+
                         if "!math" in command:
                             try:
                                 b = command.split()
                                 r = b[1]
                                 r = eval(r)
-                                self.send(
-                                    Message(text=f"{r}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                            except NameError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
-                            except IndexError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.msg(r)
+                                self.react('yes')
+                            except:
+                                self.react('no')
 
                         if "!scanurl" in command:
                             command = command.split()
                             try:
                                 vt = vtotal(command[1])
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=vt), thread_id=thread_id,
-                                          thread_type=thread_type)
+                                self.msg(vt)
+                                self.react('yes')
                             except KeyError:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(Message(text="Scanning url... Try again"), thread_id=thread_id,
-                                          thread_type=thread_type)
+                                self.msg("Checking the url...")
+                                self.msg("Scan again after few minutes.")
+                                self.react('yes')
 
                         if "!vision" == command:
                             if self.vision == 0:
                                 self.vision = 1
-                                self.send(Message(text="Please send your image!"), thread_id=thread_id,
-                                          thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.msg("Send your image.")
+                                self.react('yes')
 
                         if "!translate" in command:
                             text = message_object.text.split()
                             word = " ".join(text[1:])
-                            self.send(Message(text=translation(word)), thread_id=thread_id,
-                                      thread_type=thread_type)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
+                            self.msg(translation(word))
+                            self.react('yes')
+
                         if "!ping" in command:
                             command = command.split()
                             res = ping(command[1], verbose=True)
-                            self.send(Message(text=f"average ping: {res.rtt_avg_ms}ms"), thread_id=thread_id,
-                                      thread_type=thread_type)
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
+                            self.msg(f"average ping: {res.rtt_avg_ms}ms")
+                            self.react('yes')
+
                         if "!image" in command:
                             q = command.split()
                             query = " ".join(q[1:])
@@ -1471,36 +1392,29 @@ class FacebookBot(Client):
                                 res = imgsearch(query)
                                 self.sendRemoteImage(res, message=Message(text=''), thread_id=thread_id,
                                                      thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.react('yes')
                             except:
-                                self.send(Message(text=f"Please try again.."), thread_id=thread_id,
-                                          thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.msg("Try again.")
+                                self.react('no')
+
                         if "!spell" in command:
                             q = command.split()
                             query = " ".join(q[1:])
                             try:
                                 res = suggestquery(query)
                                 if res != query:
-                                    self.send(Message(text=f"Did you mean...\n{res}"), thread_id=thread_id,
-                                              thread_type=thread_type)
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.YES)
+                                    self.msg(f"Did you mean {res}?")
+                                    self.react('yes')
                                 else:
-                                    self.send(Message(text=f"You spelled it correctly."), thread_id=thread_id,
-                                              thread_type=thread_type)
-                                    self.reactToMessage(
-                                        message_object.uid, MessageReaction.YES)
+                                    self.msg("The spelling was correct.")
+                                    self.react('yes')
                             except:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
+
                         if "!removebg" == command:
                             if self.removebg == 0:
                                 self.removebg = 1
-                                self.send(Message(text=f"Please send your image."), thread_id=thread_id,
-                                          thread_type=thread_type)
+                                self.msg("Send your image.")
 
                         # if "!guessage" == command:
                         #     if self.guessage == 0:
@@ -1512,13 +1426,10 @@ class FacebookBot(Client):
                         if "!syn" in command:
                             try:
                                 word = command.split()
-                                self.send(Message(
-                                    text=f"{synonyms(word[1])}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.msg(synonyms(word[1]))
+                                self.react('yes')
                             except:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
 
                         # if "!train" == command:
                         #     try:
@@ -1544,22 +1455,20 @@ class FacebookBot(Client):
 
                         if "!setlocation" == command:
                             self.location = 1
-                            self.send(Message(text=f"Share your location"),
-                                      thread_id=thread_id, thread_type=thread_type)
+                            self.msg("Share your location.")
+                            self.react('yes')
 
                         if "!getlocation" == command:
                             try:
-                                self.send(Message(
-                                    text=f"{self.getloc(author_id)}"), thread_id=thread_id, thread_type=thread_type)
+                                self.msg(self.getloc(author_id))
                                 self.sendLocalFiles(
                                     f"image/{author_id}_mapview.png", "", thread_id, thread_type)
                                 self.sendLocalFiles(
                                     f"image/{author_id}_streetview.png", "", thread_id, thread_type)
+                                self.react('yes')
                             except TypeError:
-                                self.send(Message(text=f"No location info"),
-                                          thread_id=thread_id, thread_type=thread_type)
-                                self.send(Message(text=f"!setlocation to add"),
-                                          thread_id=thread_id, thread_type=thread_type)
+                                self.msg("No location info found.")
+                                self.msg("!setlocation to add your location.")
 
                         if "!unplag" in command:
                             try:
@@ -1579,63 +1488,55 @@ class FacebookBot(Client):
                                 response = requests.request(
                                     "POST", url, data=payload, headers=headers)
                                 res = response.json()
-
-                                self.send(
-                                    Message(text=f"{res['NewText']}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.msg(res['NewText'])
+                                self.react('yes')
                             except:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
 
                         if "!wiki" in command:
                             try:
                                 word = command.split()
                                 word = " ".join(word[1:])
                                 res = wikipedia.summary(word)
-                                self.send(
-                                    Message(text=f"{res}"), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
+                                self.msg(res)
+                                self.react('yes')
                             except:
                                 pass
+
                         # show commands
                         if "!commands" == command:
-                            self.reactToMessage(
-                                message_object.uid, MessageReaction.YES)
-                            self.send(Message(text="COMMAND LIST:\n\n"
-                                                   "!random image - random image\n\n"
-                                                   "!define word - define a word\n\n"
-                                                   "!lyrics artist, song_title \n\n"
-                                                   "!title name - change chat title\n\n"
-                                                   "!nickname name - change your nickname\n\n"
-                                                   "!search name - search a user\n\n"
-                                                   "!speak words - speak bot\n\n"
-                                                   "!network 0930 - show network\n\n"
-                                                   "!write message\n\n"
-                                                   "!mac mac:address\n\n"
-                                                   "!qr link\n\n"
-                                                   "!forward file_link\n\n"
-                                                   "!sms {number} {message}\n\n"
-                                                   "!meme id#text1#text2\n\n"
-                                                   "!meme id - show all id\n\n"
-                                                   "!meme help\n\n"
-                                                   "!math formula\n\n"
-                                                   "!scanurl (url)\n\n"
-                                                   "!vision - image to text\n\n"
-                                                   "!translate word\n\n"
-                                                   "!image - search image\n\n"
-                                                   "!spell - suggest/autocomplete word\n\n"
-                                                   "!removebg - remove background from image\n\n"
-                                                   "!syn - get synonyms\n\n"
-                                                   # "!guesswho - guess person\n\n"
-                                                   "!setlocation - set your location\n\n"
-                                                   "!getlocation - get your location\n\n"
-                                                   "!unplag - unplagiarized text\n\n"
-                                                   "!wiki - wikipedia\n\n"
-                                                   "!about"),
-                                      thread_id=thread_id,
-                                      thread_type=thread_type)
+                            self.msg("COMMAND LIST:\n\n"
+                                     "!random image - random image\n\n"
+                                     "!define word - define a word\n\n"
+                                     "!lyrics title, artist \n\n"
+                                     "!title name - change chat title\n\n"
+                                     "!nickname name - change your nickname\n\n"
+                                     "!search name - search a user\n\n"
+                                     "!speak words - speak bot\n\n"
+                                     "!network 0930 - show network\n\n"
+                                     "!write message\n\n"
+                                     "!mac mac:address\n\n"
+                                     "!qr link\n\n"
+                                     "!forward file_link\n\n"
+                                     "!sms {number} {message}\n\n"
+                                     "!meme id#text1#text2\n\n"
+                                     "!meme id - show all id\n\n"
+                                     "!meme help\n\n"
+                                     "!math formula\n\n"
+                                     "!scanurl (url)\n\n"
+                                     "!vision - image to text\n\n"
+                                     "!translate word\n\n"
+                                     "!image - search image\n\n"
+                                     "!spell - suggest/autocomplete word\n\n"
+                                     "!removebg - remove background from image\n\n"
+                                     "!syn - get synonyms\n\n"
+                                     # "!guesswho - guess person\n\n"
+                                     "!setlocation - set your location\n\n"
+                                     "!getlocation - get your location\n\n"
+                                     "!unplag - unplagiarized text\n\n"
+                                     "!wiki - wikipedia\n\n"
+                                     "!about")
+                            self.react('yes')
                         # else if words are not above
                         else:
                             # if mirror = 1
@@ -1698,27 +1599,20 @@ class FacebookBot(Client):
                         if self.vision == 1:
                             try:
                                 self.vision = 0
-                                self.send(Message(text=detect_text(
-                                    f"image/{thread_id}_temp.jpg")), thread_id=thread_id, thread_type=thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=f"!vision to process another image."),
-                                          thread_id=thread_id, thread_type=thread_type)
+                                self.msg(detect_text(
+                                    f"image/{thread_id}_temp.jpg"))
+                                self.react('yes')
                             except:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
+
                         if self.removebg == 1:
                             try:
                                 self.removebg = 0
                                 self.sendLocalFiles(
                                     removebg(f"image/{thread_id}_temp.jpg"), "", thread_id, thread_type)
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.YES)
-                                self.send(Message(text=f"!removebg to process another image."),
-                                          thread_id=thread_id, thread_type=thread_type)
+                                self.react('yes')
                             except:
-                                self.reactToMessage(
-                                    message_object.uid, MessageReaction.NO)
+                                self.react('no')
 
                         # if self.recognition == 1:
                         #     try:
