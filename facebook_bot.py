@@ -1673,7 +1673,7 @@ def main():
     global client
     global session_cookies
     u_user = "jammy.jammy.9404362"  # input('Enter username: ')
-    u_pw = "jamgbot2"  # getpass.getpass('Enter password: ')
+    u_pw = "jamgbot3"  # getpass.getpass('Enter password: ')
     ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
     client = Client(u_user, u_pw, user_agent=ua, max_tries=20)
     session_cookies = client.getSession()
