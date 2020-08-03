@@ -1411,7 +1411,7 @@ class FacebookBot(Client):
                                 self.msg("Send your image.")
                                 self.react('yes')
 
-                        if "!plant" == command:
+                        if "!plants" == command:
                             if self.plant == 0:
                                 self.plant = 1
                                 self.msg("Send your image.")
@@ -1579,7 +1579,7 @@ class FacebookBot(Client):
                                      "!getlocation - get your location\n\n"
                                      "!unplag - unplagiarized text\n\n"
                                      "!wiki - wikipedia\n\n"
-                                     "!plants - identify plant"
+                                     "!plants - identify plant\n\n"
                                      "!about")
                             self.react('yes')
                         # else if words are not above
