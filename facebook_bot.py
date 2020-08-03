@@ -11,6 +11,7 @@ import io
 # import argparse
 # import fbchat
 import requests
+import base64
 import random
 from time import sleep
 from random import shuffle
@@ -373,6 +374,42 @@ def rand_a():
 def rand_b():
     b = random.randint(0, 999)
     return b
+
+
+def encode_files(file_names):
+    files_encoded = []
+    for file_name in file_names:
+        with open(file_name, "rb") as file:
+            files_encoded.append(base64.b64encode(
+                file.read()).decode("ascii"))
+    return files_encoded
+
+
+def identify_plant(file_names):
+    images = encode_files(file_names)
+    # see the docs for more optional attributes
+    params = {
+        "api_key": "MSyWuuFiIc3L57qGlBhUlHxqwl18GYXn7h5CUf1ihduwvePzdM",
+        "images": images,
+        "modifiers": ["crops_fast", "similar_images"],
+        "plant_language": "en",
+        "plant_details": ["common_names",
+                          "url",
+                          "name_authority",
+                          "wiki_description",
+                          "taxonomy",
+                          "synonyms"],
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post("https://api.plant.id/v2/identify",
+                             json=params,
+                             headers=headers)
+
+    return response.json()
 
 
 class BadBot(Client):
@@ -926,6 +963,7 @@ class FacebookBot(Client):
     recognition_rename = 0
     guesswho = 0
     guesswho_upload = 0
+    plant = 0
 
     # geoloc
     location = 0
@@ -1170,7 +1208,7 @@ class FacebookBot(Client):
                         if "!about" in command:
                             self.msg("Virtual assistant for Facebook")
                             self.msg("Created by: Jamuel Galicia")
-                            self.msg("Last Update: Feb 2020")
+                            self.msg("Last Update: August 2020")
                             self.react('yes')
 
                         # pause bot
@@ -1373,6 +1411,12 @@ class FacebookBot(Client):
                                 self.msg("Send your image.")
                                 self.react('yes')
 
+                        if "!plant" == command:
+                            if self.plant == 0:
+                                self.plant = 1
+                                self.msg("Send your image.")
+                                self.react('yes')
+
                         if "!translate" in command:
                             text = message_object.text.split()
                             word = " ".join(text[1:])
@@ -1518,7 +1562,7 @@ class FacebookBot(Client):
                                      "!mac mac:address\n\n"
                                      "!qr link\n\n"
                                      "!forward file_link\n\n"
-                                     "!sms {number} {message}\n\n"
+                                    #  "!sms {number} {message}\n\n"
                                      "!meme id#text1#text2\n\n"
                                      "!meme id - show all id\n\n"
                                      "!meme help\n\n"
@@ -1535,6 +1579,7 @@ class FacebookBot(Client):
                                      "!getlocation - get your location\n\n"
                                      "!unplag - unplagiarized text\n\n"
                                      "!wiki - wikipedia\n\n"
+                                     "!plants - identify plant"
                                      "!about")
                             self.react('yes')
                         # else if words are not above
@@ -1614,6 +1659,21 @@ class FacebookBot(Client):
                             except:
                                 self.react('no')
 
+                        if self.plant == 1:
+                            try:
+                                self.plant = 0
+                                plant = identify_plant(
+                                    [f"image/{thread_id}_temp.jpg"])['suggestions'][0]['plant_details']
+                                common = ", ".join(plant['common_names'][0:])
+
+                                self.send(Message(
+                                    text=f"Scientific Name: \n{plant['scientific_name']}\nCommon Names: \n{common}"), thread_id=thread_id, thread_type=thread_type)
+
+                                self.react('yes')
+                            except Exception as e:
+                                print(e)
+                                self.react('no')
+
                         # if self.recognition == 1:
                         #     try:
                         #         self.recognition = 0
@@ -1673,7 +1733,7 @@ def main():
     global client
     global session_cookies
     u_user = "jammy.jammy.9404362"  # input('Enter username: ')
-    u_pw = "jamgbot3"  # getpass.getpass('Enter password: ')
+    u_pw = "jamgbot4"  # getpass.getpass('Enter password: ')
     ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"
     client = Client(u_user, u_pw, user_agent=ua, max_tries=20)
     session_cookies = client.getSession()
